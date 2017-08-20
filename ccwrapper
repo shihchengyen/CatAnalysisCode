@@ -1,0 +1,48 @@
+#!/bin/tcsh -f
+# usage: ccwrapper #surr/set #sets filename [dirs]
+
+# set arguments
+@ surrperset = $1
+@ sets = $2
+set basename = $3
+
+# get number of arguments
+@ nargs = $#argv
+if ( $nargs > 3 ) then
+	# if there are more arguments, loop over them instead of looping over
+	# directories in local directory
+	set dirs = ($argv[4-$nargs])
+	# get current directory
+	set thisDir = `pwd`
+	# set loop variables
+	@ setn = 1
+	
+	while( $setn <= $sets )
+		foreach i ($dirs)
+			cd $i
+			echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > ccout${setn}; /ccb/home/syen/matlab/Cat/bin/catCompute $surrperset ${basename}${setn} >> ccout${setn} 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/qsub${setn} -N ccompute -
+			cd $thisDir
+		end
+		@ setn++
+	end
+else
+    set dirs = (`ls -d [a-z][1-9]`)
+	# set loop variables
+	@ setn = 1
+	
+	while( $setn <= $sets )
+		foreach i ($dirs)
+			cd $i
+			foreach j (*)
+				cd $j
+				foreach k (*)
+					cd $k
+					echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > ccout${setn}; /ccb/home/syen/matlab/Cat/bin/catCompute $surrperset ${basename}${setn} >> ccout${setn} 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/qsub${setn} -N ccompute -
+					cd ..
+				end
+				cd ..
+			end
+			cd ..
+		end
+	end
+endif

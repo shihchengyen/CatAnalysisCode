@@ -1,0 +1,2490 @@
+Change Log for matlab functions used to analyze cat data
+
+Shih-Cheng Yen
+
+January 7, 2004
+Imported project to CVS.
+
+January 8, 2004
+@refractory/plot: Modified help comments to indicate which optional
+	input arguments are valid for ISI histogram versus recovery 
+	function. Now correctly uses varargin{:} instead of varargin when
+	passing varargin to other function.
+@refractory/refractory: Added optional input arguments to help comments.
+	Now correctly uses varargin{:} instead of varargin when	passing 
+	varargin to other function.
+
+January 9, 2004
+getFreeFiringRate: New function to compute free firing rate, q(t).
+getFunctionValues: New function to compute recovery function w(t).
+
+January 13, 2004
+spikeRecovery: Removed function argument in first line of help comments.
+	Changed histstep to isibinsize to be more informative.
+@refractory/plot: Added option to plot qt, Wt, and rt functions. Changed
+	histstep to isibinsize. Now adds trailing 0 before plotting qt, Wt,
+	and rt instead of in getFreeFiringRate.
+@refractory/refractory: Changed histstep to isibinsize. Added optional
+	arguments qtbinsize, duration and binsize. Changed object data 
+	structure so it is always accessible by specifying obj.data. Added 
+	complete description of object fields. Added code to compute qt,
+	Wt, and rt. Now prints progress to screen. Added repetitions and 
+	wt fields.
+@refractory/subsref: Changed 'rf' to 'data'.
+getFreeFiringRate: Removed trailing 0 in rt, qt, and Wt.
+getSurrogateSpikes: New function to generate surrogate spikes using
+	relative refractory period.
+
+January 14, 2004
+getSurrogateSpikes: Updated help comments to include cell number
+	argument.
+@refractory/plot: Added titles, xlabels and yabels to plots.
+@refractory/generateSurrogates: New class method that calls 
+	getSurrogateSpikes.
+
+January 15, 2004
+getFreeFiringRate: Now converts spike times to column vector using
+	new function vecc before continuing.
+@refractory/refractory: Added help comments to specify fields needed
+	in input data structure. Fixed paragraph wrapping.
+mlqsub: New tcsh script to check MATLAB features before submiting 
+	job to queue.
+
+January 16, 2004
+mlqsub: Rearranged input arguments and made numloops optional.
+CatSurrogates: Script to use with qsub to generate surrogates.
+
+January 19, 2004
+mlqsub: Modified to work properly with qsub. Now correctly prints number
+	of available licenses. Now will use matlab script as is instead of
+	using sed to replace occurrences of @ if loops is 1.
+@refractory/generateSurrogates: Added code to generate sets of 
+	surrogates and store them in a big cell array.
+CatSurrogates: Modified to run in 4 jobs. Modified to use new 
+	generateSurrogates function.
+@refractory/plot: Removed commented code that used to call 
+	getFunctionValues. 
+@refractory/refractory: Removed curve fit object from data structure
+	to allow ogier to load refractory object although it does not have
+	a license for the curve fitting toolbox. Now passes curve fit 
+	object to getFunctionValues.
+getFunctionValues: Modified to take curve fit object as input argument.
+getSurrogateSpikes: Added details of input data structure in help
+	comments.
+
+January 20, 2004
+getSurrogateSpikes: Added cstep optional input argument.
+
+January 21, 2004
+getSurrogateSpikes: Fixed bug that was not moving on to the next
+	repetition if spike wasn't found at the end of a repetiton.
+
+January 23, 2004
+CatSurrogates: Modified to use fewer cells in each group.
+gSS.m: New function modified from getSurrogateSpikes.m to work better
+	with Matlab compiler. Optional input arguments were removed and
+	numeric inputs are now explicitly converted to numbers. Added code
+	to loop over sets in order to extend run time of job in queue in 
+	order to make use of more processors at a time. Will also reduce
+	the number of queue jobs needed to do 1000 sets of surrogates.
+gSSwrapper: New tcsh shell script to submit gSS jobs to queue. Now
+	passes the number of sets per run to the new gSS.
+mlscript.m: Simple matlab script for testing with batch scripts.
+
+January 27, 2004
+getRefreshReversals.m: New function to generate list of refreshes 
+	between direction reversals in the jittering grating stimulus.
+
+February 2, 2004
+getDirectionReversals.m: New function to generate list of refreshes
+	between direction reversals in the Buracas-like stimulus.
+getGrating1OverF.m: New function to generate 1/f^beta velocity
+	distribution for gratings.
+phaserand3d.m: New function to scramble FFT phases for movies.
+
+February 3, 2004
+getDirectionReversals: Added code to print comments in output file.
+getGrating1OverF: Added code to print comments in output file. Now
+	also prints out number of phases as first number in file. Modified
+	to take framerate as optional input argument instead of refresh 
+	rate. Now labels axes of plots and prints out min and max temporal
+	frequency as title of first plot. Now takes two optional input
+	arguments 'showplot' and 'showgrating' (with the alias 'showall'
+	referring to both) to display just the plot or the grating or both.
+
+February 4, 2004
+showGratingSeq.m: New function to animate grating using given colormap
+	sequence.
+getGrating1OverF: Modified to use showGratingSeq. Added help comments.
+	Now takes minphase into account when computing temporal frequency.
+getDirectionReversals: Modified to use frame rate instead of refresh
+	rate. Capitalized optional argument names to facilitate use of 
+	abbreviations. Added code to plot sequence as well as to animate
+	grating.
+getGratingReversals.m: New function to produce Buracas like grating
+	reversals using output file like those produced by getGrating1OverF.
+	getDirectionReversals is now obsolete.
+
+February 5, 2004
+getGrating1OverF: Modified so that sequence starts from 0. Added polar
+	plot. Now runs fft on unmodified sequence so that we don't have high
+	frequencies due to the wrapping.
+
+February 10, 2004
+phaserand.c: New function to perform phase randomization of a movie 
+	sequence using the 3D FFT from the FFTW libraries. This version 
+	includes threading and was developed for 64-bit SGI IRIX. The 
+	inverted FFT is normalized by the total number of pixels in the 
+	movie sequence and the value of 128 (assume that is the mean
+	grayscale of the movie sequence. Now normalizes output images
+	to have similar mean grayscale to input images.
+phaserandf.c: Single precision version of phaserand.c to run on
+	Mac OS X. Uses FFTW-fma libraries.
+Makefile: For phaserand.c and phaserandf.c.
+phaserand3d.m: Now leaves phase of DC component intact while scrambling
+	the rest.
+
+February 11, 2004
+phaserand.c: Moved index arithmetric outside for loop to reduce compute
+	time.
+showGratingSeq: Now returns the sequence of graylevels for each distinct
+	pixel. Removed obsolete code that used palette sequences.
+getGrating1OverF: Changed optional input argument MinPhase to MinTF. 
+	Now generates a phase vector where the phase of the negative 
+	frequencies are the complex conjugate of the positive frequencies.
+	Added another variable called lastphase instead of subtracting
+	1 from nphases and having to add 1 to it a couple of times. Now 
+	plots the phase sequence including negative degrees to avoid 
+	discontinuities in the sequence. Added 2nd axis on phase plot to 
+	indicate palette indices. Improved PlotFFT code to consolidate 
+	multiple operations into fewer lines. Removed phase plot. Plots
+	the FFT of the graylevels returned from showGratingSeq.
+getGratingReversals: Fixed length of r used during initialization. Added
+	lastphase instead of subtracting 1 from nphases. Removed polar plot.
+	Added plots of the FFT of the graylevels returned from 
+	showGratingSeq.
+
+Februaru 12, 2004
+showFFTPhaseDiffs.m: New function to illustrate the differences when
+	inverting a frequency domain signal with phase vectors that are 
+	totally random and phase vectors where the second half is the 
+	complex conjugate of the first half.
+
+February 15, 2004
+phaserand.c: Fixed bug that was not reading the input files correctly.
+	Added code to compute min and max of output so that we can make 
+	sure that after shifting the mean to be the same as the input, the
+	range of gray levels is between 0 and 255. Added for-loop to
+	recompute phase randomized images if scale is smaller than 0.1
+	due to the occasional large negative number in the output (another
+	bug?).
+	
+February 16, 2004
+phaserand.c: Added code to print out mag and phase of minimum element.
+
+Februaru 17, 2004
+phaserand.c: Fixed bug in code that scaled values so they were not 
+	negative and had the same mean gray level as the input. Removed
+	code that printed out magnitude and phase of minimum element as
+	the minimum value is not related to single magnitude and phase.
+
+April 5, 2004
+gSS.m: Replaced code to save output in mat file with code to save data
+	using fwrite to reduce disk space by 50%.
+
+April 8, 2004
+getSurrogateSpikes: Added code to plot intermediate calculations used
+	to create spike trains. Added qscale input argument which changes 
+	qt to probability instead of firing rate, the latter which divided
+	the probability by the bin size.
+gSS: Removed code associated with dbflag and displayflag to optimize 
+	performance.
+plotRasters: New function used to plot rasters of data as well as 
+	surrogates.
+readSurrogateBin: New function used to read binary files created by
+	gSS function.
+
+April 12, 2004
+@FMagnitude: New class that computes the FFT magnitude of spike trains.
+@FMagnitude/FMagnitude: Constructor function.
+@FMagnitude/plot: Plots FFT magnitude along with standard deviation 
+	without DC.
+
+April 13, 2004
+@FMagnitude/FMagnitude: Added code to make sure empty matrices are not
+	passed to nptSpikeTimesFFT.
+gSS: Added rep info in printf statements.
+
+April 16, 2004
+getFunctionValues: Simplified to take fewer mandatory arguments so
+	this function can be called more easily by getFreeFiringRate2.
+@refractory/refractory: Added code to parse new data structure and
+	call appropriate new functions (i.e. getFreeFiringRate2).
+getFreeFiringRate2: New function that is modified from getFreeFiringRate
+	and works with the new data structure.
+
+April 19, 2004
+getFreeFiringRate2: Added rec output argument in case when we don't 
+	really know the qt bin size. Updated help comments to change REC 
+	input argument from mandatory to optional. Added 'frameavg'
+	optional input argument to average qt within a frame.
+@refractory/refractory: Now stores qtbinsize, rtEdges, and repetitions
+	for each cell. Fixed typo in help comments for data.edges. Changed 
+	qt, Wt, rt, rtEdges to cell arrays since they might be of different
+	length. Added wt field to help comments. Now initializes data 
+	structure fields so there is no need to resize memory on the fly.
+getSurrogateSpikes: Removed qscale optional input argument. Now uses
+	qtbinsize for each cell in input data structure. Modified code to
+	check length of qt for number of bins rather dividing duration by
+	qtbinsize since that might not be accurate. Updated to access
+	rtEdges as cell array.
+@refractory/plot: Updated to access rtEdges as cell array.
+
+April 21, 2004
+@refractory/refractory: Specified units of qtbinsize in help comments.
+	Modified to work with new input data structure that stores 
+	original_spiketrain in cell_info field. Modified to work with 
+	nptdata	functions. Added cellname field to identify cells.
+getFreeFiringRate2: Modified to use new input data structure that 
+	stores adjusted_spiketrain in cell_info field. Modified help 
+	comments to specify units for optional input arguments. Fixed bug 
+	in determining number of reps. Now takes into account that rtbinsize 
+	is in units of seconds.
+getSurrogateSpikes: Now takes into account that rtbinsize is in units 
+	of seconds. Now clears the current figure if 'displayflag' is on.
+@refractory/plot: Added description of other three kinds of plots in
+	help comments. Uncommented code that set the x-limits for the ISI
+	plot. Now labels plots with the name of the cell instead of the 
+	number.
+@catcell: New class that encapsulates Jonathan's data structure.
+@catcell/catcell: Constructor function that also computes mean and 
+	standard deviation of spike	counts for each frame.
+@catcell/plot: Plots the rasters as well as the variance versus mean
+	spike count.
+
+April 22, 2004
+catCompute: New function that loads data refractory object and generates
+	surrogate spike trains. Also computes and saves spike count mean
+	and standard deviation for each frame of the surrogates.
+readGratingSequence: New function that reads phase sequence files 
+	created by getGrating1OverF.m and getGratingReversals.m.
+getFreeFiringRate2: Now returns number of bins in each frame.
+@refractory/refractory: Now stores the number of bins in each frame
+	in data structure.
+gSS: Fixed typo in fprintf call (used $i instead of %i).
+
+April 25, 2004
+@fano: New class to display Fano data.
+@fano/fano: Constructor function for FANO class.
+@catcell/get: New function that overloads get function of nptdata class
+	to set appropriate number of events according to varargin.
+@catcell/catcell: Fixed typo in calling createEmptyObject when called
+	without arguments. Added scmean and scstd fields to data structure
+	when creating empty objects.
+@catcell/plot: Added code to plot surrogate spike trains. Added code to
+	plot spike count mean and variance for surrogate data.
+treCompute: New function to compute entropy for TRES/TREZ measurements.
+
+April 26, 2004
+treCompute: Fixed bug that was saving output files as filename.mat 
+	instead of using the input argument.
+
+April 27, 2004
+@trentropy: New class to display spike time reliability data.
+@trentropy/trentropy: Constructor function for TREntropy class.
+getTREntropy: New function that computes entropy of histc output.
+@catcell/subsref: New funtion that facilitates access to catcell 
+	objects' data structure.
+@fano/fano: Completed constructor function.
+@fano/name2index: Copied from @nptdata/name2index with references to
+	nptdata changed to fano.
+@fano/plot: Plot function for Fano objects.
+@fano/plus: Overloaded plus operator for Fano objects.
+@fano/ProcessSession: Overloaded ProcessSession function for Fano 
+	objects.
+@fano/subsref: New funtion that facilitates access to fano 
+	objects' data structure.
+treCompute: Fixed typo in comment.
+@refractory/subsref: Modified to allow easy access to internal data 
+	structure.
+
+April 28, 2004
+@fano/plot: Changed 'Cells' in title string to 'cells'.
+@trentropy/plot: Changed 'Cells' in title string to 'cells'.
+
+May 4, 2004
+@catcell/get: Replaced surrogate sets constant with default optional
+	input argument 'SurrogateSets'.
+@catcell/plot: Added plots to check spike count mean, variance and 
+	fano factor for data versus surrogates. Replaced surrogate sets 
+	per file constant and surrogate file basename with default optional 
+	input arguments	'SurrogateSetsPerFile' and 'SurrogateBasename'. 
+	Updated help comments to describe new plots and new optional input
+	arguments.
+@fano/plot: Plots are now labelled as Fano instead of Entropy.
+@refractory/plot: Added ability to plot 'rt', 'qt', and 'Wt' together.
+@trentropy/trentropy: Wrapped long lines.
+
+May 5, 2004
+@catcell/catcell: Modified to compute spike latency with respect to
+	frame onset.
+@catcell/plot: Modified to plot spike latency data. Will also compute
+	data if the requested bin sizes are different from what was 
+	computed.
+
+May 6, 2004
+eventCompute: New function that computes event intervals of the
+	surrogate spike trains.
+
+May 7, 2004
+eventCompute: Added code to compute percentage of reps that have spikes
+	in both events making up a sub-stimulus interval. Modified to use
+	Jonathan's new code which gets rid of long output arguments.
+@FMagnitude/FMagnitude: Added code to generate data automatically, load
+	and save objects as needed. Now works with new mat files of the cat
+	data.
+@FMagnitude/plot: Added title to plots.
+
+May 10, 2004
+@FMagnitude/FMagnitude: Added help comments. Fixed bug in processing
+	data when data structure is passed as input argument.
+@FMagnitude/plot: Added parsing of input arugments so this function can
+	be called without passing an extraneous numeric argument. Added
+	option to show DC amplitude.
+@fano/ProcessCell: New function that replaces ProcessSession that is 
+	necessary as a result of changes in the nptdata class.
+@trentropy/ProcessCell: New function that replaces ProcessSession that 
+	is necessary as a result of changes in the nptdata class.
+@catcell/plot: Added some examples of InspectGUI usage in help comments.
+
+May 12, 2004
+@FMagnitude/FMagnitude: Removed 'keepNumeric' option from getOptArgs
+	since it is now the default. Now correctly saves the varargin 
+	returned from getOptArgs.
+@FMagnitude/plot: Removed 'keepNumeric' option from getOptArgs since it
+	is now the default.
+@catcell/catcell: Now correctly saves the varargin returned from 
+	getOptArgs.
+@catcell/plot: Removed 'keepNumeric' option from getOptArgs since it is 
+	now the default.
+@fano/fano: Now correctly saves the varargin returned from getOptArgs.
+@fano/plot: Removed 'keepNumeric' option from getOptArgs since it is now
+	the default.
+@refractory/refractory: Now correctly saves the varargin returned from 
+	getOptArgs.
+@trentropy/trentropy: Now correctly saves the varargin returned from 
+	getOptArgs.
+@trentropy/plot: Removed 'keepNumeric' option from getOptArgs since it 
+	is now the default.
+
+May 13, 2004
+eventCompute: Fixed bug that created 1000x1000 cell array instead of
+	1000x1 cell array. Added input argument to specify whether event 
+	upper thresholds should be taken from the data or computed for each 
+	surrogate. Added input argument to specify output filename.
+@catcell/plot: Added option to look at distribution of event intervals.
+
+May 14, 2004
+@catcell/plot: Added option to plot multi-taper power spectrum density
+	of spike trains. Added lines to Latency plot to indicate refresh
+	intervals.
+
+May 26, 2004
+@catcell/plot: Fixed bug that tried to plot line for 95th percentile
+	of event intervals for the surrogates when the surrogate file is not
+	present.
+@variability: New class that combines the fano and trentropy objects
+	so we can plot and compute correlations between fano data and
+	trentropy data.
+@variability/variability: Constructor for new class. Now keeps the 
+	directory path so we can plot surrogate data if necessary.
+@variability/name2index: Function that maps names to indices.
+@variability/plot: Merged plot functions from fano and trentropy 
+	classes. Added plots to look at Fano versus	trentropy z-scores and
+	mean versus entropy.
+@variability/plus: Function to add objects.
+@variability/ProcessCell: Batch processing function.
+@variability/subsref: Function to access data.
+
+May 31, 2004
+@variability/ProcessCell: Fixed bug in creating empty object - now
+	correctly calls variability instead of fano.
+
+June 14, 2004
+@variability/variability: Added code to process grating data. Added code
+	to search for data.mat files instead of	*g*c.mat. Added code to 
+	figure out cell names for cells with data.mat files.
+@catcell/catcell: Added code to search for data.mat files instead of
+	*g*c.mat. Added code to figure out cell names for cells with
+	data.mat files.
+
+
+August 25, 2004
+@sparsity/plot.m: Removed code that changed object data. Fixed histogram 
+	edges so the edges used in the calculation is also used in the plot.
+	Added 'histc' option to bar plot to align bars to align the edges 
+	correctly.
+@FiringRate/plot.m: Removed code that changed object data. Fixed histogram
+	edges so the edges used in the calculation is also used in the plot.
+	Added 'histc' option to bar plot to align bars to align the edges 
+	correctly.
+@responsiveness/plot.m: Removed code that changed object data. Fixed 
+	histogram edges so the edges used in the calculation is also used in
+	the plot. Added 'histc' option to bar plot to align bars to align 
+	the edges correctly.
+@events/plot: Removed code that changed object data. Fixed histogram 
+	edges so the edges used in the calculation is also used in the plot.
+	Added 'histc' option to bar plot to align bars to align the edges 
+	correctly.
+@responsiveness/private/CalcResponsiveness: Changed code back to return 
+	p_dist instead of the distribution of R values.
+@adjSpikes/get.m: Broke long command line into two for better 
+	legibility.
+
+August 27, 2004
+@FiringRate/plot.m: Changed hist call to histcie to better control bin
+	limits used to calculate the histogram and to make sure the
+	histogram plot does not have a separate value at the maximum.
+	Changed semi-log plots to use line plots instead of bar plots.
+@adjSpikes/plot.m: Added FMarkersOff option to turn off frame markers
+	when plotting rasters.
+@responsiveness/plot.m: Changed hist call to histcie.
+@sparsity/plot.m: Changed hist call to histcie.
+@sparsity/plot.m: Changed hist call to histcie.
+@FMagnitude/FMagnitude.m: Added code to use ispikes object to create
+	object. Mean and std in data are now stored in columns to facilitate
+	plotting data from multiple cells.
+@FMagnitude/plot.m: Removed mandatory second input argument and added
+	code to figure out if we are to plot individual data or aggregate
+	data. Added code to plot aggregate data.
+@FMagnitude/plus.m: New function to create aggregate FMagnitude object.
+@FMagnitude/subsref.m: New function to access data in FMagnitude 
+	objects.
+
+August 30, 2004
+@FMagnitude/plot.m: Added code to normalize all means before plotting so
+	as to provide comparisons across data series.
+
+September 8, 2004
+@FMagnitude/FMagnitude.m: Now uses adjSpikes instead of ispikes so we
+	can compute time-frequency data, which are averaged over 
+	repetitions. Added code to store data for time-frequency plots. Now 
+	passes varargin to adjSpikes so we can make use of the SaveLevels 
+	and RedoLevels functionality. Added remove optional input argument 
+	to getOptArgs to remove arguments specific to this function. Now
+	passes varargin to nptSpikeTimesFFT so options for that function can
+	be specified when the FMagnitude object is being instantiated. Code
+	to store time-frequency data for old data structures might need
+	revision.
+@FMagnitude/plot.m: Added option and code to plot time-frequency data.
+@FMagnitude/plus.m: Added code to add time-frequency data.
+@adjSpikes/adjSpikes.m: Raster field in data now stores spike times in
+	columns rather being a structure containing spike times in rows.
+	Storing spike times in columns makes it easier to call
+	nptSpikeTimesFFT and should be easier to plot as well. Removing the
+	need for the structure simplifies working with the data. Added 
+	rasterIndex field to keep track of which rasters go with which data
+	set.
+@adjSpikes/plus.m: Added code to add newly modified raster field and
+	newly added rasterIndex field.
+@adjSpikesXCorr: New class to compute cross-correlations along with
+	shift-predictor.
+@adjSpikesXCorr/adjSpikesXCorr.m: Constructor function for new 
+	adjSpikesXCorr class.
+@adjSpikesXCorr/get.m: Get function for new	adjSpikesXCorr class.
+@adjSpikesXCorr/plot.m: Plot function for new	adjSpikesXCorr class.
+@adjSpikesXCorr/plus.m: Plus function for new	adjSpikesXCorr class.
+@adjSpikesXCorr/subsref.m: Subsref function for new	adjSpikesXCorr 
+	class.
+
+September 9, 2004
+@FMagnitude/FMagnitude.m: Now uses different name for varargin returned 
+	by getOptArgs since nargin is dependent on varargin so if we remove
+	certain arguments from it using getOptArgs, the lengths will
+	change. The function nargin is also called just once and the result
+	stored instead of calling it multiple times.
+@adjSpikes/adjSpikes.m: Now sets the number and holdaxis to 1 and 0
+	respectively when creating nptdata object. This allows the adjSpikes
+	objects to be added without a warning from nptdata/plus.
+@adjSpikes/plus.m: Revised using the template in dirfiles. This was
+	necessary to avoid errors caused by the check for empty objects
+	being in the wrong place. Also uses new functionality in the
+	concatenate function to correctly add the raster field together.
+@adjSpikes/plot.m: Uncommented code that changed directory to the proper
+	directory in order to plot data. Not sure why it was commented out
+	in the last version. Now correctly selects only the relevant data
+	in adjFramePoints and adjSpiketrain to pass to CreateRaster.
+
+September 27, 2004
+@adjSpikesXCorr/adjSpikesXCorr.m: Modified code to compute cross-
+	correlations using the histogram of spike time differences ala
+	Nirenberg & Latham (1998), which is very much faster than creating 
+	spike trains and calling Matlab's xcorr. Added code to perform 
+	Kolmogorov-Smirnov test on xcorr and shift-predictor to see	if the 
+	two distributions are significantly different. The significance 
+	level can be specified using the KSAlpha optional input	argument. 
+	Changed default BinSize to 1. Added code to do Gaussian fit on bins 
+	that are significant using binomial statistics. Added option to
+	specify bins for computing excess correlated fraction since the new
+	way of computing cross-correlations has bins on either side of 0
+	instead of having a bin at 0. Now stores string specifying if
+	distributions are not different, if center of Gaussian fit is not 
+	within fit points (i.e. data inside fit points is a straight line),
+	if no fit points were found, or the width and center of the Gaussian
+	fit.
+@adjSpikesXCorr/plot.m: Added option to plot differences between cross-
+	correlation data and shift-predictor, as well as the Gaussian fit.
+	Now creates text box with result of Gaussian fit, ECF, and KS stat.
+@adjSpikesXCorr/plus.m: Now adds new fields kspvalue, ksstat, legendstr,
+	fitgoodness, fresult, xcwidth, pciCounts.
+@latency: New class that computes latency of spikes relative to stimulus
+	frame onset.
+@latency/latency.m: Constructor for new latency class. Code mostly from
+	@catcell/catcell.
+@latency/plot.m: Plot function for new latency class. Code mostly from
+	@catcell/plot.
+@latency/plus.m: Plus function for new latency class.
+@latency/subsref.m: Subsref function for new latency class.
+
+September 28, 2004
+@FiringRate/private/CalcFiringRate.m: Modified to include the spike 
+	counts from the last frame. Optimized code by replacing for loops 
+	with single	call to histcie, followed by a reshape.
+
+September 30, 2004
+@adjSpikes/adjSpikes.m: Modified to pass on optional input arguments to
+	objects that are instantiated. Modified call to stiminfo from
+	stiminfo('auto',1,'save') to stiminfo('auto',vargin{:}) to remove
+	redundant second argument and hardcoded save option. Added comment
+	about not passing optional input arguments to ispikes since redo
+	does not quite work with ispikes from the cluster directory yet.
+@FiringRate/firingRate.m: Modified to pass on optional input arguments
+	to object that are instantiated. Modified call to stiminfo from
+	stiminfo('auto',1,'save') to stiminfo('auto',vargin{:}) to remove
+	redundant second argument and hardcoded save option. Added 
+	SessionDir to nptdata before inheriting	from it.
+@catcell/plot.m: Modified MTTime optional input argument to MTBinSize
+	to better describe what it represents.
+
+October 1, 2004
+@adjspikes: Changed adjspikes to lower case so objects saved on Windows 
+	will work on non-Windows machines.
+@adjspikes/adjspikes.m: 	
+@adjspikes/display.m: Changed case of adjspikes.
+@adjspikes/get.m: Changed case of adjspikes.
+@adjspikes/plot.m: Changed case of adjspikes. Changed catcell references
+	to adjspikes.
+@adjspikes/plus.m: Changed case of adjspikes.
+@adjspikes/subsref.m: Changed catcell references to adjspikes.
+@jointevents/jointevents.m: Changed case of adjspikes.
+@latency/latency.m: Changed case of adjspikes.
+@responsiveness/responsiveness.m: Changed case of adjspikes. 
+@sparsity/sparsity.m: Changed case of adjspikes.
+createCatAVI.m: Changed case of adjspikes.
+@adjspikespsth: Changed adjspikespsth to lower case so objects saved on
+	Windows will work on non-Windows machines.
+@adjspikespsth/adjspikespsth.m: Changed case of adjspikespsth. Changed
+	case of adjspikes.
+@adjspikespsth/get.m: Changed case of adjspikespsth.
+@adjspikespsth/plot.m: Changed case of adjspikespsth.
+@adjspikespsth/private/CreateRaster.m: Changed case of adjspikespsth.
+@adjspikespsth/private/adjPSTH.m: Changed case of adjspikespsth.
+@adjspikespsth/private/adjPSTHOLD.m: Changed case of adjspikespsth.
+@adjspikesxcorr: Changed adjspikesxcorr to lower case so objects saved
+	on Windows will work on non-Windows machines.
+@adjspikesxcorr/adjspikesxcorr.m: Changed case of adjspikesxcorr. Added 
+	check for empty xcdiplus before	trying to use it. If xcdiplus is 
+	empty, fitgoodness, fresult and	xcwidth are initialized to empty 
+	values. Changed case of adjspikes.
+@adjspikesxcorr/get.m: Changed case of adjspikesxcorr.
+@adjspikesxcorr/plot.m: Changed case of adjspikesxcorr.
+@adjspikesxcorr/plus.m: Changed case of adjspikesxcorr.
+@adjspikesxcorr/subsref.m: Changed case of adjspikesxcorr.
+@firingrate: Changed firingrate to lower case so objects saved on
+	Windows will work on non-Windows machines.
+@firingrate/firingrate.m: Changed case of firingrate.
+@firingrate/plot.m: Changed case of firingrate.
+@firingrate/plus.m: Changed case of firingrate.
+@firingrate/subsref.m: Changed case of firingrate.
+@firingrate/private/CalcFiringRate.m: Changed case of firingrate.
+@fmagnitude: Changed fmagnitude  to lower case so objects saved on 
+	Windows will work on non-Windows machines.
+@fmagnitude/fmagnitude.m: Changed case of fmagnitude.
+@fmagnitude/plot.m: Changed case of fmagnitude.
+@fmagnitude/plus.m: Changed case of fmagnitude.
+@fmagnitude/subsref.m: Changed case of fmagnitude.
+
+October 5, 2004
+@firingrate/firingrate.m: Added 'CaseInsensitive' to nptDir call to 
+	check for presence of previously saved object since the case
+	of the filename might not change even if we re-save the object.
+@adjspikespsth/adjspikespsth.m: Added 'CaseInsensitive' to nptDir call 
+	to check for presence of previously saved object since the case
+	of the filename might not change even if we re-save the object.
+@adjspikes/adjspikes.m: Added 'CaseInsensitive' to nptDir call to check 
+	for presence of previously saved object since the case of the 
+	filename might not change even if we re-save the object.
+
+October 11, 2004
+@refractory/plot.m: Fixed typo in spelling of linear in help comments.
+@refractory/refractory.m: getOptArgs now stores the modified varargin
+	in varargin2.
+getFreeFiringRate2.m: Removed unnecessary keepNumeric flag in call to 
+	getOptArgs. Added code to remove spikes that occurred in the blank
+	frame of the old data since it was causing problems with the
+	insertion of the recovery function wherever there are spikes.
+@refractory/plot.m: Removed mandatory second argument so that this
+	function will work with nptdata/plot.
+@refractory/refractory.m: Added code to compute refractory object using
+	stiminfo, adjspikes, and isi objects.
+@adjspikesxcorr/plot.m: Added code to plot significant bins in 
+	difference between x-corr and shift predictor (not complete).
+
+October 13, 2004
+Removed directories @adjSpikes, @adjSpikesPSTH, @adjSpikesXCorr, 
+	@FiringRate, @FMagnitude on CVS server by hand since SmartCVS
+	on Windows is unable to distinguish between lowercase and 
+	upppercase.
+
+October 14, 2004
+@firingrate/private/CalcFiringRate.m: Corrected typo (colon at the end
+	of the line instead of semi-colon).
+@adjspikespsth/adjspikespsth.m: Removed fields sessionname, groupname,
+	cellname since they are no longer in adjspikes.
+
+October 15, 2004
+@latency/plot.m: Added title to plots.
+
+October 19, 2004
+@variability/variability.m: Now saves the modified varargin in 
+	varargin2. Added code that use adjspikes and stiminfo objects in
+	calculating variability. Now sets flag after checking to see if the
+	session we are processing is a grating session. Added code to check
+	for the presence of obj_type in the stimulus_info structure since 
+	the field is not present in stiminfo objects. Now correctly appends
+	'.mat' when checking for the presence of surrogate data files. Added
+	code that does not assume name of variable saved in surrogate data
+	files.
+
+October 20, 2004
+@variability/plot.m: Added mean vs Fano plot, including 2D histogram. 
+	Added plot of raw entropy, including option to also plot entropy of 
+	surrogate data. Re-organized optional input arguments so we can just 
+	specify either 'Fano'/'Entropy' and 'SurrPercent'/'SurrZScores' to 
+	reduce number of cases we need to check. Added inputs to specify 
+	histogram min, max and step size separately for both x- and y-axes. 
+	Added code to alter	plot colors, symbols and size for data and 
+	surrogates using optional input arguments.
+
+October 21, 2004
+@adjspikes/plot.m: Now uses dirLevel to create shortname for the title.
+
+October 22, 2004
+@variability/plot.m: Added option to select z-score or percent threhold
+	for all plots. Added different colors for points above and below the
+	spike count threshold, and for points which exceed and do not exceed
+	the specified threshold. Added flags plotAllData and plotOneData so
+	we don't have to keep checking ~isempty(Args.NumericArguments. Moved
+	code that checked for points above and below the spike count
+	threshold to the top since it is common to all options. Added option
+	to change the font size in axes tick lablels, x- and y-labels, and 
+	title. Now uses line command instead of errorbar to plot surrogate
+	data so the horizontal bars at the ends of errorbars won't overlap 
+	with each other. Now uses parameter-value pairs to specify marker
+	and color when using the plot command so we can use any color
+	instead of being limited to the 7 colors in LineSpec. As a result,
+	we now also have a LineStyle option but it is probably never going
+	to be used as an optional input argument but rather a way of listing
+	the constants used in the function. Added code to draw lines 
+	separating points from different cells in population plots. Added
+	option to use time of frame points from adjspikes object so we can
+	use linkedzoom with the adjspikes object to inspect the rasters.
+	Fixed bug in code that checked for points above and below the spike
+	count threshold so it uses the threshold in Args instead of 1. Moved
+	code that separated indices into signifcant/not-significant, above/
+	below spike count threshold to the top so it is not redundantly in
+	every option. Created concatenated matrix containing the different 
+	sets of indices so we can call histcie just once. Moved code that
+	changed directory to the cluster directory to load surrogate data or
+	to get frame times to the top so it is not redundantly in several
+	options. The variable xvals now initialized properly to either be in
+	frame numbers or time for all options. Each option now sets strings
+	for title, x- and y-labels and the actual label command is now at 
+	the end	so it is easier to modify if we add options like 'FontSize'.
+	Moved "axis tight" command to the end so it is not scattered 
+	throughout the code.
+
+October 23, 2004
+@variability/plot.m: Now checks plotCellSep flag at the end to see if
+	lines need to be drawn to indicate where the frames from one cell
+	ends and the other begins. Fixed histogram code to properly plot all
+	four types of bar plots using the stacked option.
+
+October 26, 2004
+plotRasters.m: Modified to use plot instead of line to draw rasters.
+@refractory/plot.m: Now does not show plot legends unless the 
+	ShowLegend option is specified. Added option to display surrogate 
+	spike trains. Now uses dirLevel to shorten name for display in 
+	title.
+@variability/plot.m: Consolidated code to create histogram and other
+	common plot types into section at the end. The plotType argument is
+	now used to pick between the different types of plots. Now properly
+	loads surrogate data when ShowSurrogateData is used with the default
+	option, which is to plot mean vs variance.
+
+January 5, 2005
+@firingrate/firingrate.m: Fixed case when calling CalcFiringRate.
+@frdiff: New class to compute differences in firing rates among clusters
+	within a group.
+@frdiff/frdiff.m: Constructor function for new frdiff class.
+@frdiff/get.m: Get function for new frdiff class.
+@frdiff/plot.m: Plot function for new frdiff class.
+@frdiff/plus.m: Plus function for new frdiff class.
+@frdiff/subsasgn.m: Subsasgn function for new frdiff class.
+@frdiff/subsref.m: Subsref function for new frdiff class.
+
+January 6, 2005
+@frdiff/frdiff.m: Now computes and stores the sum of differences and 
+	the magnitude of the vector sum. 
+@frdiff/plus.m: Updated to add new fields.
+@frdiff/plot.m: Added code to plot cummulative data.
+
+January 7, 2005
+@frdiff/frdiff.m: Now stores firing rates instead of the objects so we
+	can run the vecsimilarity calculation more easily. Now calls
+	vecsimilarity to compute vmag field. Added vang field to compute
+	similarity index ala Vinje and Gallant, 2000. Added code to
+	rearrange differences for 3 vectors so that the order is the same as
+	the other cases. Now computes the mean of the sum of differences to
+	normalize for differences in number of frames.
+@frdiff/plus.m: Updated to add vang field.
+
+January 12, 2005
+@adjspikes/get.m: Added optional input argument to modify the default
+	group plot property of this object. This allows the adjspikes
+	rasters to be plotted in a stacked manner instead of overplotting.
+@adjspikes/plot.m: Changed showTitle option to HideTitle since it wasn't
+	being used. Removed linkedZoom option since it is not being used.
+	Removed irrelevant optional input arguments in call to getOptArgs.
+	Added option to not add a title to the plot so that when the rasters
+	are plotted in a stacked fashion, the titles won't get in the way.
+@frdiff/frdiff.m: Changed frdsum field to frdmean to better reflect 
+	the calculations. Added frdmax field to save the maximum difference
+	between firing rates. Now uses variable to save current directory 
+	instead of calling pwd multiple times.
+@frdiff/plot.m: Added optional input arguments to create plots of 
+	different data. Added option to plot histograms either by specifying
+	the number of bins or the bins to be used. Now appropriately labels
+	axes and titles. Added option to create plots with 2 y axes.
+@frdiff/plus.m: Updated to use frdmean field instead of frdsum and now
+	adds the frdmax fields.
+@firingrate/firingrate.m: Remove unused fields dlist and setIndex.
+	Now correctly creates a firingRate field in the createEmptyObject 
+	function. Now saves output of pwd in a variable so it does not have
+	to be called multiple times.
+@firingrate/plot.m: Changed showTitle option to HideTitle since it was
+	not being used. The HideTitle prevents the title from being created
+	which may be useful when creating composite plots with InspectGUI.
+	Now plots time course of PSTH by default (although labels in the
+	default case are not appropriate).
+@firingrate/private/CalcFiringRate.m: Now correctly removes edge effects
+	from the beginning and the end of the vector produced by 
+	convolution.
+
+January 18, 2005
+@frdiff/frdiff.m: Added code to compute mean firing rate from a pair or
+	more cells and then to compute the mean and max differences based on
+	Poisson differences from the mean, i.e. assuming the standard deviation
+	is the square root of the mean.
+@frdiff/plot.m: Added options to specify bin size of histograms. Added
+	comment to clarify computation of the mean difference between more 
+	than 1 pair of cells. Added code to plot control data. Now creates the
+	appropriate title for histograms.
+@frdiff/plus.m: Added code to add fields for control data.
+@variability/plot.m: Added option to remove lines separating data from 
+	different cells. This makes the plot a little more legible when the 
+	overall	size is small.
+
+February 3, 2005
+@adjspikes/plot.m: Now saves current directory instead of calling pwd 
+	multiple times. Now returns to original directory so the user doesn't 
+	suddenly find themselves in some unexpected directory.
+@firingrate/firingrate.m: Removed unused fields dlist and setIndex. Added 
+	meancounts, timebins, and binsize fields to save the mean rate, the 
+	time bins used to compute the histogram and the binsize used to create 
+	the	histogram bins. This makes it easier to create plots of firing 
+	rates as a function of time.
+@firingrate/plus.m: Now adds meancounts, timebins, binsize fields.
+@firingrate/plot.m: Removed unused HideTitle option. Added PSTH option to 
+	plot firing rate as a function of time. Removed extraneous characters 
+	"fi" at	end of nptSubplot call. 
+@firingrate/private/CalcFiringRate.m: Now returns meancounts and timebins 
+	so we can easily display the psth as a function of time, which then 
+	allows linkedzoom to work with objects like adjspikes. Reverted code 
+	used to compute frame level spike counts with overlap to last working 
+	version since the new version seems to be incorrect. Fixed bug in 
+	Repetitions code that would generate bins that were not monotonically 
+	increasing.
+@latency/plot.m: Removed SubPlot option since that option is now implied 
+	when the function is called without numeric arguments.
+@refractory/plot.m: Added LabelsOff option to work with nptdata/plot. 
+	Removed description of plot in title to make it better when used with 
+	nptdata/plot to create subplots.
+
+February 7, 2005
+spikeRecovery.m: Now returns pfpts which may be changed in the process of 
+	fitting using the PeakRatio and FitWindow criteria. Added option to do
+	running fits to find best fit and to display and pause the fits. Added
+	option to specify window to do fit (ala Berry & Meister, 98). Added 
+	option to check the ratio between the value at the peak and the value 
+	at expfitmax. Added code to check for invalid fits to prevent problems 
+	with the plot function later.
+@refractory/refractory.m: Now uses pfpts returned by the spikeRecovery 
+	function.
+
+February 14, 2005
+@frdiff/plot.m: Added option to do plotyy plots with mean and max, vang and 
+	vmag. Added code to alter the plot symbols when using plotyy so the 
+	data points are apparent. Added the mean value in the title for 
+	histograms. Now computes the histogram on the ctrldata only if it is 
+	not empty.
+
+February 16, 2005
+spikeRecovery.m: Removed curve fit output argument since it was smoothing 
+	out the absolute refractory period and thus possibily leading to 
+	artificially short ISI's. Removed the PeakRatio option which was 
+	introduced to differentiate it from the FitWindow option since the 
+	PeakRatio also uses the FitWindow argument. Now computes the 
+	Peak-to-End ratio in log coordinates to make it more consistent with 
+	the rest of the calculations. Added code to locate the maximum point by 
+	finding the first point that crosses a specified percentile of the 
+	maximum. This helps to prevent cases of spurious maximums at large 
+	latencies. Added code to do successive fits until the slope of the 
+	exponential is negative if the Peak-to-End ratio is below threshold. 
+	Now uses new npt function zerolog to avoid log of zero errors. Added 
+	code to check for NaN's when grabbing the value at expfitmaxpts and 
+	iteratively decreasing the data points until a valid value is found. 
+	Moved code in fitWindow subfunction back to the FitWindow option since
+	it is now only used in that case.
+refractory.m: Now no longer uses the curve fit object that used to be 
+	returned by the spikeRecovery function. 
+
+February 17, 2005
+refractory.m: Added the curve fit object back since the recovery function is 
+	simply too noisy if derived from the raw histogram. Now passes the raw
+	recovery points to getFreeFiringRate2 as well so that can be used to ensure
+	the absolute refractory period is observed. Now also passes the isibinsize
+	to getFreeFiringRate2 to make sure that the function values generated from 
+	the curve fit object use the same bin sizes that were used to compute the 
+	curve fit object.
+spikeRecovery.m: Added the code to compute the curve fit object back since the
+	recovery function is simply too noisy if derived from the raw histogram. 
+	Fixed bug that was adding 1 to pfpts, which caused the refractory/plot 
+	function to overshoot the end limit since it was using pfstart + pfpts to
+	obtain pfend.
+getFreeFiringRate2.m: Renamed qtbinsize to ISIBinSize, which is now passed to 
+	this function by refractory.m to make sure that the bins size used in the 
+	isi histogram computed in deriving the recovery function is similar to the
+	one used to compute the free-firing rate. ISIBinSize is also now used to
+	generate the function values from the curve fit object. The function values
+	obtained from the curve fit object are combined with the data points of the
+	recovery function to ensure that the absolute refractory period is observed.
+
+February 24, 2005
+@firingrate/plot.m: Added option to create heterogeneity plots of the peak
+	and mean firing rates.
+@firingrate/private/CalcFiringRate.m: Fixed bug that was not converting spike
+	counts to rates for frame level calculations with no overlaps.
+@latency/plot.m: Replaced the dummy optional argument with real optional input
+	arguments to look at the auto-correlation of the latency histogram, the
+	cross-correlation of the latency histogram with the refresh, and the FFT
+	of the latency histogram.
+@firingrate/heterogeneity.m: New function to return the organize data from the
+	object into groups using nptdata/groupDirs.
+@refractory/subsasgn.m: New function to modify object data.
+getGrating1OverF.m: Function moved to npt/scripts/miscellaneous.
+getGratingReversals.m: Function moved to npt/scripts/miscellaneous.
+showGratingSeq.m: Function moved to npt/scripts/miscellaneous.
+
+March 9, 2005
+@frdiff/frdiff.m: Added code to compute the correlation coefficient between
+	firing rates.
+@frdiff/plus.m: Added code to add the fields used to store the result of the
+	correlation coefficient calculation.
+@adjspikesxcorr/adjspikesxcorr.m: Added code to compute sliding cross 
+	correlation. Added code to generate surrogates to compute significance of
+	sliding cross correlation.
+@adjspikesxcorr/plus.m: Modified xc and sxc fields to be added together using
+	the concatenate function instead of [] since the length of xc is variable
+	if the sliding cross correlation is calculated.
+@adjspikesxcorr/plus.m: Added code to plot data of sliding cross correlation.
+	This function used to use the lags field to identify xcorr data but this is
+	will no longer work so need to use some other field.
+@adjspikesxcorr/private/asxcSurrSynchrony.m: New function to generate 
+	surrogates and compute cross correlations for a frame.
+@adjspikesxcorr/private/combineSurrSynchrony.m: New function to combine the
+	data from all the surrogates generated to compute significance of cross
+	correlations.
+@adjspikesxcorr/private/computeSynchrony.m: New function to compute the cross
+	correlations of two histogrammed spike train.
+
+March 10, 2005
+ccwrapper: Added shell script to create surrogates with relative refractory
+	period and compute their spike count variability to CVS. Fixed code
+	so it will correctly take a list of directories as input arguments.
+trewrapper: Added shell script to compute spike time variability of surrogate
+	spike trains with a relative refractory period to CVS. Fixed code
+	so it will correctly take a list of directories as input arguments.
+eventwrapper: Added shell script to compute events of surrogate spike trains
+	with a relative refractory period to CVS.
+gSSwrapper: Now creates symbolic link to rfd data.
+@adjspikesxcorr/private/asxcSurrSynchrony.m: Added code to explicitly convert
+	arguments to numbers so that we can compile this function into a standalone
+	executable. Added code to check for frames with no spikes. Added code to
+	compute for more than 1 frame since the jobs on ogier were taking too little
+	time so not all the nodes were being used.
+asxcwrapper: New shell script to submit queue jobs to compute surrogates for
+	each frame. Now properly encapsulates the command that produces the 
+	jobid with `. Fixed bug that was not incrementing while loop variable.
+	Fixed missing quotes from the command to combine surrogate data. Modified to
+	pass starting and ending frame numbers to asxcSurrSynchrony. Modified to use
+	the beforeok depend syntax in qsub instead of the afterok depend syntax 
+	since that required a string that was too long. Fixed bug that was using
+	framen variable which has been replaced by startframe and endframe. Fixed
+	bug that was missing a space between @ and endframe.
+@adjspikesxcorr/private/combineSurrSynchrony.m: Modified to convert arguments
+	explicitly to numbers.
+@adjspikesxcorr/adjspikesxcorr.m: Added input argument for specifying number of
+	frames per job when calling the shell script to generate the surrogates.
+	Now stores the name of the shell script in Args. Added missing argument for
+	name of final surrogate file. Fixed typo in spelling of WaitForSurrogates.
+	Added code to run shell script in the background so we don't have to wait
+	for the shell script to finish submitting all the jobs.
+@adjspikesxcorr/plus.m: Added \n character in warning.
+
+March 11, 2005
+@adjspikesxcorr/adjspikesxcorr.m: Added help comments about how data fields are
+	used when the Sliding option is used. Added code to compute surrogate data.
+	Now correctly specifies full name of surrogate file so that ispresent is 
+	able to find it. Added code to re-save object if surrogate data was added to 
+	the	object. Fixed bug that was adding a field named ActualBinSize to the 
+	data structure. 
+@adjspikesxcorr/plot.m: Added Sliding flag to temporarily identify objects
+	computed with the Sliding option. The object should be modified to retain
+	the Args structure used to generate the object. I am holding off on this 
+	since I still have some old adjspikesxcorr objects that I would like to 
+	take a look at. Added code to create plot of surrogate histogram using 
+	imagesc, with data values plotted on top. Added code to create plot of 
+	z-score distributions using HistMin and HistStep arguments.
+
+March-16-2005
+@latency/plot.m: Added the Color input argument so that this function can be 
+	used with the nptgroup/plot function to create group plots.Now uses 
+	'ShortName' in the title in every case.
+@adjspikesxcorr/adjspikesxcorr.m: Added code to use dirLevel(0,'GetClusterDirs') 
+	to generate ClusterDirs from the current directory if none were passed in.
+	Surrogate histogram bins now go all the way to the maximum of the data so 
+	we can see the data along with the surrogate histograms when we plot them 
+	on top of each other.
+@adjspikes/plot.m: Added Interleaved, GroupPlots and GroupPlotIndex input 
+	arguments to create plots where the rasters of a group of cells are 
+	interleaved to increase visibility.
+@firingrate/firingrate.m: Now uses the binsize returned from CalcFiringRate to 
+	initialize data.binsize since there was a problem of data.binsize being 
+	'frame' when the default arguments are used. This caused an error in the 
+	plot function which tries to convert spike count values into rates using 
+	the data.binsize value.
+@adjspikesxcorr/plus.m: Commented out code that checked if lags vectors were 
+	the same since they will not be the same when the Sliding option is used.
+@adjspikesxcorr/plot.m: Fixed bug that failed to initialize the lagslength 
+	variable.
+@firingrate/private/CalcFiringRate.m: Now returns the binsize used in the 
+	calculation so if the default window size, which is 'frame', is used, we 
+	can store the actual window size in the constructor. Shifted the meancounts 
+	= counts line in the frane level calculation with no overlap so that if the 
+	variable counts is converted to rate, meancounts will also be converted to 
+	rate.
+@firingrate/plot.m: Fixed bug in the way the Color argument was used with the 
+	stairs command.
+
+March-31-2005
+@adjspikesxcorr/plot.m: Added coded to plot significant excess synchronous 
+	spikes in red for the sliding xcorr data. 
+@adjspikesxcorr/adjspikesxcorr.m: Changed optional input arguments so it now 
+	takes number of subwindows, number of bins in a subwindow, and the number 
+	of bins to increment when evaluating overlapping windows. Added code so 
+	that these values can be specified in terms of the frame duration by having 
+	the arguments evaluated programmatically if the arguments are strings 
+	containing the word "frame". Changed WaitForSurrogates to WaitForQsub since 
+	you can now use qsub to compute data without surrogates. Also changed 
+	SurrWaitTime and SurrProgram to QsubWaitTime and QsubProgram respectively. 
+	Now uses the raster field in adjspikes instead of the continuous data to 
+	compute synchrony. This way the data can be evaluated in the same way that 
+	the surrogates are evaluated using the new xcorr algorithm that does not 
+	require checking for refractory period violations in the surrogates. Now 
+	calculates and preallocates many variables needed in the surrogate 
+	generation program so they won't have to be regenerated over and over by 
+	each run. 
+CatCmds.m: Added commands to plot sliding xcorr data. 
+@adjspikesxcorr/private/asxcSurrSynchrony.m: Revamped to compute xcorr for 
+	surrogates without having to check for refractory period violations. 
+	Renamed input argument from frame to window since it is now possible to do 
+	the analysis on any sized window. Now computes complete xcorr on both the 
+	data and the surrogates instead of just a few lags. Added optimization so 
+	that the xcorr is computed only on relevant trials. Now loads most 
+	variables from the mat file created by adjspikesxcorr so the variables 
+	don't have to be recomputed and allocated again and again. 
+asxcwrapper: Commented out code that invoked final job to combine the 
+	surrogates since the matrices will be too big. 
+@adjspikesxcorr/private/asxcSurrSynchrony.m: Now converts xc matrix to sparse 
+	matrix before saving to conserve disk space. 
+@adjspikesxcorr/private/asxcSurrSynchrony.m: Removed surrSets argument since 
+	that is now loaded from the mat file created by adjspikesxcorr. 
+asxcwrapper: Removed sets argument since asxcSurrSynchrony no longer needs that 
+	as an argument. 
+@adjspikesxcorr/adjspikesxcorr.m: Now no longer passes the number of surrogates 
+	to asxcwrapper since that is now passed through the saved mat file. 
+@adjspikesxcorr/adjspikesxcorr.m: Fixed bug in code that failed to change 
+	JobFrames to JobWindows when the name of the input argument was changed. 
+
+April-1-2005
+@adjspikesxcorr/adjspikesxcorr.m: Added DataFile field to Args so we don't end 
+	up using a constant string in the middle of the code. Added SurrFilePrefix 
+	to Args so we can check for presence of surrogate files. Added code to 
+	compute synchronous spikes from data file generated by the surrogate 
+	generation program. Added code to check for presence of surrogates before 
+	trying to generate surrogates. 
+@adjspikesxcorr/adjspikesxcorr.m: Removed code to load surrogate data when 
+	loading saved objects since that is now done by CreateObject. 
+	
+April-2-2005
+@adjspikesxcorr/adjspikesxcorr.m: Added code to save the appropriate lags 
+	vector. Fixed bug that was not saving the asxcdata file with the right 
+	name. 
+
+April-05-2005
+CatCmds.m: Modified to use pre-generated ndinter nptdata object.
+@adjspikesxcorr/adjspikesxcorr.m: Now passes datafile and surrprefix arguments 
+	to asxcwrapper so we can generate surrogates with different parameters. 
+asxcwrapper: Added datafile and surrprefix arguments that are passed to the 
+	asxcSurrSynchrony program so we can generate surrogates with different 
+	parameters. 
+@adjspikesxcorr/private/asxcSurrSynchrony.m: Added datafile and surrprefix 
+	arguments instead of hard-coding in the program so that we can generate 
+	multiple surrogates with different parameters. 
+@adjspikesxcorr/plot.m: Removed HistMin argument which defaulted to 0 so we can 
+	see negative z-scores. Added LabelsOff argument so creating subplots using 
+	nptdata/plot will work properly. Added code to plot running z-score. 
+	Modified code to create time vector on x-axis to work with new lags field. 
+	Added check for data with no significant z-scores so we don't get an error 
+	when trying to plot the significant bins in red. 
+@adjspikesxcorr/adjspikesxcorr.m: Now rounds SubWindowBins and OverlapIncrBins 
+	to integers to make sure that they are indices into binidx. 
+CatCmds.m: Added code to create ndintra and ndinter nptdata objects for 
+	Charlie's machine. Added code to generate adjspikesxcorr objects. 
+@latency/get.m: Get function for object to specify default GroupPlotProperties.  
+@adjspikesxcorr/subsasgn.m: Function to assign values to object's structure.
+
+April-06-2005
+@adjspikesxcorr/adjspikesxcorr.m: Now saves nsbins as string instead of 
+	converting it twice. Now rounds subwindow bins up so we make sure we don't 
+	miss part of the frame. Fixed bug that was not sending the correct number 
+	of jobs to the asxcwrapper program.
+
+April-11-2005
+@adjspikesxcorr/plot.m: Added option to plot mean and std of the synchronous 
+	spikes of the surrogates. Now works with cummulative objects. Added hack to 
+	work around old objects that don't have the pciCounts field set for 
+	cummulative objects. 
+@adjspikesxcorr/plus.m: Modified to correctly add objects created by Sliding 
+	option. Added hack to work around older objects created without the 
+	pciCounts field set correctly. 
+@adjspikesxcorr/adjspikesxcorr.m: Added remark in help comments to indicate 
+	that the field pciCounts is now used to keep track of the frames in sxc 
+	that belong to each pair. 
+@adjspikes/plot.m: Added Fast option to speed up plotting of rasters by 3 to 9 times. 
+CatCmds.m: Now uses Fast option in adjspikes to plot rasters.
+
+April-18-2005
+@adjspikessync/private/asxcSurrSynchrony.m: New class that implements the 
+	sliding xcorr calculation that used to be in the adjspikesxcorr class. 
+@adjspikessync/private/computeSynchrony.m: New class that implements the 
+	sliding xcorr calculation that used to be in the adjspikesxcorr class. 
+@adjspikessync/subsref.m: New class that implements the sliding xcorr 
+	calculation that used to be in the adjspikesxcorr class. 
+@jointevents/jointevents.m: Replaced calls to dirLevel with getDataDirs. 
+@adjspikesxcorr/plus.m: Replaced with code from version 1.3 since the 
+	modifications to accomodate the sliding xcorr calculations are no longer 
+	necessary now that there is a separate class to perform that calculation. 
+@adjspikesxcorr/plot.m: Added option to turn off the significance plot if 
+	desired. Now uses getDataDirs to shorten the pair name for the plot title. 
+@variability/plot.m: Replaced calls to dirLevel with getDataDirs. 
+@gsparsity/gsparsity.m: Replaced calls to dirLevel with getDataDirs. 
+CatCmds.m: Added commands to plot several adjspikessync objects. Added commands 
+	to plot several adjspikesxcorr objects. 
+@adjspikesxcorr/adjspikesxcorr.m: Added AutoCorr option so that the 
+	autocorrelation count is subtracted from the xcorr count so the plots are 
+	clearer. The AutoCorr option also now makes it easier to create the 
+	adjspikesxcorr object for single clusters using ProcessDirs. 
+@adjspikes/adjspikes.m: Removed code to change directory before instantiating 
+	the stiminfo object since the stiminfo object now correctly uses 
+	getDataDirs to change to the appropriate directory. Removed unused dlist 
+	and setIndex fields when creating the empty data structure. Added 
+	adjSpiketrain, adjFramePoints, raster and rasterIndex fields to the empty 
+	data structure. 
+@adjspikessync/private/combineSurrSynchrony.m: New class that implements the 
+	sliding xcorr calculation that used to be in the adjspikesxcorr class. 
+@refractory/refractory.m: Removed code to change directories before 
+	instantiating the stiminfo object since the stiminfo object now correctly 
+	changes to the appropriate directory. 
+@adjspikes/plot.m: Added slighty more separation between repetitions when using 
+	the interleaved option. 
+@responsiveness/heterogeneity.m: Replaced calls to dirLevel with getDataDirs. 
+@frdiff/frdiff.m: Replaced calls to dirLevel with getDataDirs. 
+@stcov/stcov.m: Replaced calls to dirLevel with getDataDirs. 
+@latency/latency.m: Replaced calls to dirLevel with getDataDirs. 
+@frdiff/plot.m: Replaced calls to dirLevel with getDataDirs. 
+@adjspikessync/plot.m: New class that implements the sliding xcorr calculation 
+	that used to be in the adjspikesxcorr class. 
+@adjspikessync/plus.m: New class that implements the sliding xcorr calculation 
+	that used to be in the adjspikesxcorr class. 
+@latency/plot.m: Replaced calls to dirLevel with getDataDirs. 
+@refractory/plot.m: Replaced calls to dirLevel with getDataDirs. 
+@adjspikessync/get.m: New class that implements the sliding xcorr calculation 
+	that used to be in the adjspikesxcorr class. 
+@adjspikesxcorr/get.m: Added default group plot separation setting. 
+@sparsity/heterogeneity.m: Replaced calls to dirLevel with getDataDirs. 
+@adjspikessync/adjspikessync.m: New class that implements the sliding xcorr 
+	calculation that used to be in the adjspikesxcorr class. 
+@responsiveness/responsiveness.m: Removed code to change directories before 
+	instantiating the stiminfo object since the stiminfo object now correctly 
+	changes to the appropriate directory. 
+@variability/variability.m: Replaced calls to dirLevel with getDataDirs. 
+@adjspikessync/subsasgn.m: New class that implements the sliding xcorr 
+	calculation that used to be in the adjspikesxcorr class. 
+
+April-25-2005
+@firingrate/firingrate.m: Removed code that changed directory to the session 
+	directory before instantiating the stiminfo object since the stiminfo 
+	object can do that on its own now. 
+@frdiff/frdiff.m: Fixed bug that was not converting the p values into a vector 
+	before taking the maximum which resulted in p vectors that were different 
+	in size which caused problems with the plus function. 
+
+April-27-2005
+@adjspikessync/adjspikessync.m: Added option to generate asxcdata file without 
+	calling the shell script to submit jobs to the queue so we can compute the 
+	asxcdata file in parallel across multiple nodes. 
+@adjspikessync/adjspikessync.m: Now checks if datafile is present so we can 
+	just launch the shell script to submit jobs to the queue once the datafiles 
+	are created using multiple nodes. 
+
+May-03-2005
+@shufflesync/private/shufflesyncsurr.m: Function to compute xcorr of 
+	shuffled surrogates.
+@shufflesync/subsasgn.m: Function for class to compute shuffled surrogate 
+	synchrony.
+@shufflesync/private/computeSurrData.m: Function to compute synchronous 
+	spikes from all surrogates.
+@shufflesync/shufflesync.m: Function for class to compute shuffled 
+	surrogate synchrony.
+@shufflesync/plot.m: Function for class to compute shuffled surrogate 
+	synchrony.
+@shufflesync/plus.m: Function for class to compute shuffled surrogate 
+	synchrony.
+@shufflesync/get.m: Function for class to compute shuffled surrogate 
+	synchrony.
+@shufflesync/private/shsywrapper: Shell script to submit pbs jobs to 
+	compute shuffled surrogate synchrony.
+@shufflesync/subsref.m: Function for class to compute shuffled surrogate 
+	synchrony.
+@shufflesync/private/computeSurrData.m: Now constructs the filename for 
+	each surrogate instead of using the structure returned by nptDir since 
+	that seems to be causing error when compiling with mcc.
+
+May-04-2005
+@shufflesync/private/shsywrapper: Modified to shorten the names of the 
+	processes passed to qsub since there is a limit of 15 characters.
+@shufflesync/shufflesync.m: Fixed bug that was not saving the xctemp 
+	variable.
+@shufflesync/shufflesync.m: Added missing space separating arguments in 
+	syscmd.
+@shufflesync/private/shufflesyncsurr.m: Added code to make sure the 
+	histogram is taken for the data and for each of the surrogates 
+	separately, especially when xcmat is a row vector.
+@shufflesync/shufflesync.m: Fixed bug that did not declare NoQsub as an 
+	input argument flag.
+@shufflesync/shufflesync.m: Replaced call to syncshufflesurr with 
+	shufflesyncsurr.
+@shufflesync/shufflesync.m: Modified code in NoQsub option to correctly 
+	call computeSurrData to produce the result file and then to create the 
+	object using the result file.
+@shufflesync/private/shufflesyncsurr.m: Fixed bug that was replacing xctemp 
+	from the data file with a temporary variable which produced surrogate 
+	files with incorrect sizes which was causing computeSurrData to fail.
+@shufflesync/shufflesync.m: Modified to use nptDir instead of ispresent to 
+	look for saved object file since ispresent is much slower when there 
+	are a lot of files in the current directory.
+
+May-06-2005
+@shufflesync/private/shufflesyncsurr.m: Modified to shorten long lines.
+@shufflesync/shufflesync.m: Added option to return empty object if no 
+	result file is present instead of generating the surrogates.
+@shufflesync/private/shufflesyncsurr.m: Modified to check for refractory 
+	period violations for each surrogate to reduce memory usage.
+@shufflesync/private/shufflesyncsurr.m: Now skips overlap checking for 
+	repetitions with only 1 spike and repetitions with spikes that are 
+	separated by more than the minimum required for overlap.
+@shufflesync/shufflesync.m: Renamed numCombinations (which is no longer 
+	used by shufflesyncsurr) to needrefcheck. 
+
+May-07-2005
+@shufflesync/shufflesync.m: Fixed the fields in the createEmptyObject 
+	function to remove setNames and add Args. 
+@shufflesync/plot.m: Added option to highlight synchronous spikes in the 
+	rasters created by adjspikes.
+@adjspikes/plot.m: Added option to highlight selected spikes in the 
+	spiketrains. Removed references to stimInfoDir since the stiminfo 
+	object knows how to change directories itself. 
+
+May-10-2005
+@shufflesync/plot.m: Moved code to find synchronous spikes to the 
+	constructor. The Rasters option now just uses the MarkMatrix field in 
+	the object. 
+@shufflesync/plus.m: Added MarkMatrix field to store synchronous spikes 
+	for the raster plot. 
+@shufflesync/private/computeSurrData.m: Added calculation of the shift 
+	predictor data. 
+@shufflesync/shufflesync.m: Modified to save all information necessary to 
+	create object in the data file so that we can first check for the 
+	presence of the result file and create the object if the result file 
+	is present using the result file and the data file. Modified to 
+	include space for the shift predictor data in the variables created 
+	for the surrogate generation. Addded variables used in the surrogate 
+	generation for the psth calculation. Added code that used to be in the 
+	plot function that saved synchronous spikes for highlighting in the 
+	raster plot. Now calls a new makeObject subfunction to create an 
+	object instead of repeating code to create object in three different 
+	places. Added fields in the data structure of the object for the shift 
+	predictor data and for marking synchronous spikes. 
+@shufflesync/private/shufflesyncsurr.m: Added code to compute the shift 
+	predictor for the data. Added code to compute the psth for the data 
+	and the surrogates including repetitions that only have spikes in one 
+	cell. 
+@adjspikes/plot.m: Added option to highlight selected spikes in the raster 
+	plot. 
+@shufflesync/private/computeSurrData.m: Modified to return error only if 
+	there are few surrogate files than expected since it is possible for 
+	the surrogate file prefix to match more than the expected files (e.g. 
+	a prefix of shsysurr will match shsysurr0001 and shsysurrA0001). 
+@shufflesync/private/computeSurrData.m: Now correctly uses numwindows 
+	instead of the number of files that match the surrogate file prefix 
+	for all calculations. The old method was causing problems when there 
+	were files in the directory like shsysurrA0001.mat when the prefix we 
+	are looking for is shsysurr. 
+@shufflesync/shufflesync.m: Added printf statements when waiting for qsub 
+	to provide some visual feedback. 
+
+May-11-2005
+@shufflesync/shufflesync.m: Moved code that marked the synchronous spikes 
+	in the raster to the makeObject function so that we don't have to find 
+	ways to regenerate the data file without generating the surrogates in 
+	order to mark the spikes. As a result, we no longer save markmat1 and 
+	markmat2 in the data file. Renamed MarkMatrix field to 
+	RasterMarkMatrices to reflect the use of this field to store both the 
+	synchronous spikes in the data as well as the shift-predictor. 
+@shufflesync/plot.m: Now uses logical indices to plot the significant and 
+	non-significant z-scores without any overlap instead of plotting all 
+	points first and then plotting the significant points in a different 
+	color. Added plot of the shift-predictor values in the SurrHist plot 
+	option. Modified to make use of the new rasterMarkMatrices field in 
+	the object to plot synchronous spikes in the data and in the 
+	shift-predictor. Now also passes input arguments to the nptgroup/plot 
+	function. 
+@shufflesync/plus.m: Modified to add the new RasterMarkMatrices field. 
+@shufflesync/private/shufflesyncsurr.m: Now correctly initializes the xc1 
+	to nan's instead of 0's which was causing spurious synchronous spikes 
+	in the shift-predictor. 
+@adjspikes/plot.m: Added option to highlight any number of sets of spikes. 
+	Now uses the new function nptDefaultMarkers to get the markers for the 
+	different sets of spikes. The nptDefaultMarkers function includes the 
+	ability to specify the markers using an input argument. 
+@shufflesync/plot.m: Now correctly changes directory to the combination 
+	directory before trying to instantiate nptgroup object when creating 
+	the raster plots. 
+@shufflesync/plus.m: Now adds the ShiftPSyncSpikes field of the object. 
+@shufflesync/shufflesync.m: Changed SkipNoresult option to SkipNoResult so 
+	we can use aliases more easily. 
+
+May-13-2005
+@shufflesync/plot.m: The default stairs plot of the number of synchronous 
+	spikes in each window now works properly on new objects. Added labels 
+	to the default plot. 
+
+May-24-2005
+@shufflesync/private/shufflesyncsurr.m: Added use of constants to index 
+	into the data or surrogate columns to make it easier to modify in the 
+	future. Modified to save the data and surrogate spike times (but not 
+	the shift-predictor since it will be identical to the data) instead of 
+	the psth so we can do kstest2. Now also saves the repetition numbers 
+	so we can reconstruct the surrogate spike trains if we wanted to. Now 
+	uses a for-loop to generate surrogate spike trains for repetitions 
+	without spikes in both cells instead of replicating the code. 
+@shufflesync/private/computeSurrData.m: Added use of constants for indexing
+	into the data or surrogate columns to make it easier to modify in the 
+	future. Now computes the significant xcorr bins as well as the kstest2 
+	between the psth distributions of the data versus the surrogates. 
+@shufflesync/shufflesync.m: Added vectors of surrvec + 1 and surrvec + 2 to
+	the data file since we no longer save the spike times of the 
+	shift-predictor, which should be identical to the data. As a result, 
+	when we save the spike times we are saving numSurrogates+1 columns of 
+	data. On the other hand, when we save the xcorr, we have to add to add 
+	the shift predictor so we have numSurrogates+2 columns of data. 
+@shufflesync/plot.m: Made SurrHist the default plot type since it is 
+	currently the most used option. Renamed previous default plot type to 
+	the input argument SyncSpikes. Added PSTH option to display psth 
+	distribution between the data and the surrogates (still in 
+	development). Added XCorr option to display full xcorr instead of just 
+	the synchronous spikes (still in development). 
+@shufflesync/private/shufflesyncsurr.m: Fixed bug in placement of code 
+	that saves the repetition numbers with spikes present. 
+@shufflesync/private/shufflesyncsurr.m: Now correctly transposes repsnopair 
+	before saving into repswspike2. 
+@shufflesync/private/shufflesyncsurr.m: Now converts repsnopair to column 
+	vector by using (:) since simply transposing did not work. 
+@shufflesync/plot.m: Added option to specify threshold for p values 
+	returned by kstest2 to test for differences in the PSTH. Moved code 
+	used to compare xcorr plots for different shuffle values to PSTH 
+	temporarily in order to finalize the code for the XCorr option. The 
+	code in the XCorr option now checks the zscores to see if it exceeds 
+	the z-score threshold, and checks the p-values returned by kstest2 to 
+	make sure the PSTHs of both cells are not significantly different from 
+	the surrogates. 
+@shufflesync/private/computeSurrData.m: Now stores the mean, std, and 
+	zscores of the xcorr values in the result file so we can use different 
+	thresholds in the plot function to look at the results. Now correctly 
+	renames the raw xcorr values of the data and the surrogates so it does 
+	not conflict with existing variables. Added check to make sure there 
+	are at least 4 spikes in each cell before attempting to use kstest2 
+	since it is not accurate below 4. Now converts matrices with a large 
+	number of zeros to sparse matrices to save disk space. 
+@shufflesync/private/computeSurrData.m: Added more detailed comments on why 
+	each cell has to have more than 4 spikes per cell in order for kstest2 
+	to be accurate. 
+@shufflesync/private/shufflesyncsurr.m: Removed output arguments since it 
+	seems to be causing the computeSurrData job to be executed prematurely 
+	in pbs. 
+
+May-26-2005
+@shufflesync/plot.m: Added NoXCorrData flag so that we can merge mutiple 
+	XCorr plots into one. Added GroupPlots and GroupPlotIndex arguments so 
+	we can differentiate multiple plots from each other. Updated 
+	development code in the PSTH option to work with new data structures. 
+	Now uses pcolor instead of imagesc so we can have unequal bin sizes 
+	which allows the pcolor plot to correctly line up with respect to time 
+	of the stimulus. Now marks the bins which the z-score threshold is 
+	exceeded but the psth's are considered different in gray. 
+
+June-01-2005
+@shufflesync/plot.m: Added option named Try and moved development code into 
+	that section so that we can test the PSTH code. Added NoPsthData option 
+	similar to NoXCorrData so we can overplot multiple PSTH. Added YLim 
+	option to limit the y-axis of the xcorr plot. Added code to plot PSTH 
+	data for alternating windows with different symbols. Now uses start 
+	time of bins to properly align with the rasters. 
+@shufflesync/shufflesync.m: Changed default WindowBins to 'frame' since 
+	that seems to be the most commonly used setting. Added RecalcData 
+	option to just save the data file so we can add some fields to the data 
+	file that can be used by the plot function or the computeSurrData 
+	function without having to regenerate the surrogates. Now saves binsc 
+	to the data file so we can plot the PSTH of the data easily. Now saves 
+	subbins so that the PSTH can be plotted with the actual start time of 
+	each bin. 
+
+June-02-2005
+@shufflesync/plot.m: Removed commented code. 
+@shufflesync/private/shsywrapper: Now takes only the window numbers and the 
+	name of the surrogate data file as input since shufflesyncsurr and 
+	computeSurrData have been modified to take only the surrogate data file 
+	as input. 
+@shufflesync/private/shufflesyncsurr.m: Now takes the start and end window 
+	numbers and the name of the surrogate data file as the input arguments. 
+	The name of the data file is now available in the surrogate data file. 
+@shufflesync/private/computeSurrData.m: Now takes only the surrogate data 
+	file as input. The data file name stored in the surrogate data file is 
+	used to load the other required variables. Moved code that computed the 
+	PSTH for the surrogates from the plot function here. The result is 
+	saved to the result file so the plot function just has to load it and 
+	plot it. Moved the computation of RasterMarkMatrices from the 
+	constructor to here to speed up creation of objects. 
+@shufflesync/shufflesync.m: Now saves binsc in the data file so we can plot 
+	the PSTH for the data easily. Now saves variables used in the surrogate 
+	computation that depend on input arguments into a separate file named 
+	Args.SurrData. This way, the data file can contain only variables that 
+	are totally dependent on the data and so different runs with different 
+	arguments can share the same data file. Now checks for the presence of 
+	the data file and will only recompute the histogram if the data file is 
+	not present or if the RedoDataFile argument is specified. Now calls 
+	shsywrapper shell function with just window numbers and the surrogate 
+	data file which now contains all the necessary information to invoke 
+	shufflesyncsurr and computeSurrData functions.  Moved code that 
+	computed the RasterMarkMatrices to the computeSurrData function to 
+	speed up object creation since most objects are being created on the 
+	fly in order to compare the results of using different shuffle values. 
+@shufflesync/private/shsywrapper: Now echoes the job id for computeSurrData 
+	as well as the number of jobs it is waiting for. 
+@shufflesync/shufflesync.m: Renamed datafile variable saved in surrogate 
+	data file to cellpairdatafile since there is a class called datafile 
+	and it seems to be conflicting with the use of that variable name. 
+@shufflesync/private/computeSurrData.m: Renamed datafile variable saved in 
+	surrogate data file to cellpairdatafile since there is a class called 
+	datafile and it seems to be conflicting with the use of that variable 
+	name. 
+@shufflesync/private/shufflesyncsurr.m: Renamed datafile variable saved in 
+	surrogate data file to cellpairdatafile since there is a class called 
+	datafile and it seems to be conflicting with the use of that variable 
+	name. 
+
+June-03-2005
+@shufflesync/shufflesync.m: Now loads DataFile and ResultFile directly into 
+	workspace instead of assigning to another variable to make the data 
+	more easily accessible. Now converts mark matrices to logical matrices 
+	since computeSurrData now saves the mark matrices as sparse matrices to 
+	save disk space. Renamed object structure variable from data to objdata 
+	to avoid conflict with data variable saved in the ResultFile. Updated 
+	to use the variable name dzscore to access the z-scores in the 
+	ResultFile. 
+@shufflesync/private/computeSurrData.m: Now only computes number of 
+	synchronous spikes for relevant windows to reduce redundant 
+	calculations. Renamed zscore variable to dzscore to avoid conflict with 
+	the zscore function. Now saves individual mark matrices as sparse 
+	matrices since we can't create sparse matrices for cell arrays. Using 
+	sparse matrices will allow us to cut down on disk usage. 
+@shufflesync/plot.m: Now loads data from result file to plot PSTHs. Shifted 
+	XCorr code above Try to keep it closer to PSTH code so it is easier to 
+	edit. 
+@shufflesync/plot.m: Now converts PSTH from spike counts to spike rates in 
+	Hz. Now uses nanindex to plot psth matrices with nan values so the 
+	number of points plotted is reduced. Moved development code in PSTH 
+	section to Args.Try. 
+@shufflesync/private/computeSurrData.m: Now creates matrices filled with 
+	nan for computing PSTH so we can reduce number of plots plotted. 
+
+June-08-2005
+@shufflesync/private/computeSurrData.m: Added code to compute tests for 
+	normality for each xcorr phase lag in each window. 
+@shufflesync/private/shsywrapper: Added code to perform computations on the
+	local disks of each ogier node. 
+@shufflesync/plot.m: Added option to use the results of jbtest or 
+	lillietest to determine which points should be highlighted. 
+@shufflesync/private/computeSurrData.m: Now converts jbmat and limat to 
+	sparse matrices before saving to reduce disk usage. 
+
+June-09-2005
+@shufflesync/private/computeSurrData.m: Removed hpsth variable (which was 
+	used to store the h value from the psth test) since we don't want to 
+	have to rerun this function to try another p value. This can be done by 
+	the plot function by using the p values returned from the tests. Now 
+	saves the p values returned by jbtest and lillietest instead of the h 
+	value. As a result, in order not to confuse real p values of 0, the 
+	matrices are initialized with nan instead of zeros and are no longer 
+	converted to sparse matrices since the presence of the nan's will not 
+	lead to much reduction in disk usage. 
+@shufflesync/plot.m: Added optional argument to specify p value for the 
+	test to see if the surrogate distribution for each xcorr phase lag is 
+	normal. Added alias argument to specify p value for both psth and 
+	surrogate distribution tests. Now uses the p-values computed by 
+	computeSurrData and saved in the result file to determine which bins 
+	have surrogate distributions that are normal. The bins that are above 
+	the zscore threshold and have similar psth's but have surrogate 
+	distributions that are not normal are now plotted in white. 
+@shufflesync/private/computeSurrData.m: Now converts binidx to non-sparse 
+	matrix so that the logical comparisons work. 
+@shufflesync/plot.m: Temporarily added back code to use jbmat and limat 
+	from old results files. Added code to Try section to display normal 
+	and non-normal distributions. 
+@shufflesync/private/computeSurrData.m: Removed conversion of sparse 
+	matrix since logical comparisons work fine with sparse matrices. The 
+	problem I had run into before was that cell arrays cannot be converted 
+	to sparse matrices. 
+@shufflesync/private/computeSurrData.m: Now explicitly converts sparse 
+	matrices in l.sptrains to full matrices to make sure kstest2 does not 
+	crash. Sparse matrices are possible now that binidx is saved in 
+	shufflesync as a sparse matrix since the code in shufflesyncsurr 
+	sometimes indexes into binidx directly and saves the result into 
+	l.sptrains. 
+
+June-20-2005
+@shufflesync/private/shsywrapper: Added code to lauch computations on 
+	subnodes using batch (commented out right now since we are still doing 
+	this by hand for now). 
+@shufflesync/plot.m: Now thresholds the p values returned by 
+	computeSurrData for the normality test. Now plots the truly significant 
+	bins last to improve visibility. Added code to Try section to plot the 
+	distributions that are normal and those that are not, as well as their 
+	p-values to see what the jbtest is doing. 
+
+June-23-2005
+@variability/plot.m: Updated call to getDataDirs to shorten names by adding 
+	'DirString'. 
+@shufflesync/plot.m: Updated call to getDataDirs to shorten names by adding 
+	'DirString'. 
+@latency/plot.m: Updated call to getDataDirs to shorten names by adding 
+	'DirString'. 
+@adjspikessync/plot.m: Updated call to getDataDirs to shorten names by 
+	adding 'DirString'. 
+@refractory/plot.m: Updated call to getDataDirs to shorten names by adding 
+	'DirString'. 
+@adjspikesxcorr/plot.m: Updated call to getDataDirs to shorten names by 
+	adding 'DirString'. 
+@frdiff/plot.m: Updated call to getDataDirs to shorten names by adding 
+	'DirString'. 
+
+July-13-2005
+@sparsity/heterogeneity.m: Removed unused options IntraGroup and 
+	InterGroup. Now calls groupDirs without the IntraGroup argument since 
+	that is now the default. Removed calls to groupDirs with the InterGroup 
+	argument since that option was never implemented in groupDirs. 
+@responsiveness/heterogeneity.m: Removed unused options IntraGroup and 
+	InterGroup. Now calls groupDirs without the IntraGroup argument since 
+	that is now the default. Removed calls to groupDirs with the InterGroup 
+	argument since that option was never implemented in groupDirs. 
+@shufflesync/shufflesync.m: Now uses the shortcut AND operator (&&) to skip 
+	checking the other condition if the first condition is false. 
+@frdiff/frdiff.m: Now uses isempty(nptDir(...)) instead of ispresent since 
+	ispresent is slower when there are a lot of files in the directory. Now 
+	also uses the shortcut AND operator (&&) to skip checking the other 
+	condition if the first condition is false. 
+@frdiff/plot.m: Added option to create heterogeneity plots. 
+
+July-19-2005
+@frdiff/plot.m: Added option to plot PSTH correlation coefficients, 
+	including differentiating between those with signicant and 
+	non-significant values. Added option to plot PSTH correlation 
+	coefficients against vector angle. Added code to mark values in the 
+	heterogeneity plot of the PSTH correlation coefficients that are not 
+	significant. 
+@frdiff/frdiff.m: Modified comments to differentiate between signal and 
+	noise correlation. Code for noise correlation still yet to be 
+	completed. 
+@frdiff/frdiff.m: Now calls getDataDirs to generate cluster directories 
+	using the current directory so we can just use ProcessDirs to create 
+	the objects instead of having to use ProcessDays. Now passes the 
+	'NoiseCorr' flag to the firingrate constructor to make sure that the 
+	difference between the spike counts on individual trials and the 
+	average of all the trials is computed. Now computes and saves the noise 
+	correlation coefficients and p-values, in addition to the signal 
+	correlation values (but only for pairs). 
+@firingrate/private/CalcFiringRate.m: Added 'NoiseCorr' option to compute 
+	difference between spike counts on each trial and the average over all 
+	trials. When that option is specified, the meancounts field is the 
+	noise counts. 
+@frdiff/plot.m: Added option to plot noise correlation data. Modified code 
+	to mark insignificant correlation coefficients to include noise 
+	correlation data. 
+@frdiff/plus.m: Modified to add noise correlation data fields. 
+@firingrate/firingrate.m: Added 'NoiseCorr' option to compute difference 
+	between spike counts on each trial and the average over all trials. 
+	When that option is specified, the meancounts field is the noise 
+	counts. 
+
+July-21-2005
+@frdiff/plot.m: Added code to highlight non-significant correlation 
+	coefficients in the histograms. This uses stacked bar plots with 
+	modifieid bins in order to simulate the histc option to bar, which does 
+	not work with stacked bar plots. For other histogram plots with control 
+	data, the data is now plotted using the bar command with the histc 
+	argument and the control data is plotted using the stairs command so as 
+	to emphasize that it is a different distribution. 
+@frdiff/plot.m: Added comments to explain why we do stacked bar plots for 
+	histograms of correlation coefficients and bar/stairs combination for 
+	other histograms. 
+
+July-26-2005
+@frdiff/plot.m: Now separates out significant and insignificant correlation 
+	values only if we are plotting histograms otherwise the GroupedIntra 
+	option will not work since it tries to index all the data. 
+@firingrate/firingrate.m: Added spike_matrix field so that we can compute 
+	the correlation between individual windows in frdiff. 
+@adjspikespsth/plot.m: Removed code that changed directories before 
+	instantiating stiminfo object since the stiminfo object now changes 
+	directories automatically. 
+@frdiff/frdiff.m: Added code to compute noise correlations for individual 
+	windows. 
+@firingrate/plot.m: Commented out conversion from spike counts to rate 
+	since that is specified when calling the constructor. 
+@firingrate/private/CalcFiringRate.m: Added spike_matrix output so that we 
+	can compute the correlation between individual windows in frdiff. 
+	Replaced code to compute firing rates in specified window sizes and 
+	overlap with vectorized code that was previously moved to the end of 
+	the function and not used. Modified code to deal with overlaping 
+	windows. Now aligns overlapping windows to the start of the window 
+	instead of the center of the window, which would change depending on 
+	whether the window size used was an even or odd number. Added 
+	'NoiseCorr' option to compute deviations from mean count across 
+	repetitions for each window so we can compute noise correlations in the 
+	frdiff object. 
+@frdiff/plot.m: Added option to plot windowed noise correlation data. Now 
+	plots data using time instead of data points so we can align the data 
+	with plots from other objects. Now uses stairs instead of plot so it is 
+	clearer that we are plotting windowed data. Now plots the control data 
+	using dashed lines to improve visibility of the data under the control 
+	data. 
+@frdiff/plus.m: Now concatenates the new fields winnoisecorr, 
+	winnoisecorrp, and timebins. 
+@frdiff/frdiff.m: Now saves the timebins from the firing object so we can 
+	plot the frdiff data in time. This way we will be able to align the 
+	plots with other objects using linkedzoom. 
+
+July-27-2005
+@frdiff/plot.m: Added option to plot the average firing rate of two cells. 
+	Added option to plot the 2D histogram of average rate versus noise 
+	correlations. 
+@frdiff/frdiff.m: Added option to threshold the firing rate of each cell 
+	before computing the windowed noise correlation only on the bins that 
+	are above threshold for both cells. 
+@firingrate/private/CalcFiringRate.m: Now correctly converts meancounts to 
+	rate as well when using frame delimited windows with no overlap so that 
+	PSTH plots work properly. 
+
+July-28-2005
+@frdiff/plot.m: Moved code to threshold firing rates of individual cells 
+	before computing the windowed noise correlation from the constructor to 
+	the plot command so we don't have to keep regenerating the object in 
+	order to try out different thresholds. 
+@frdiff/frdiff.m: Moved code to threshold firing rates of individual cells 
+	before computing the windowed noise correlation to the plot command so 
+	we don't have to keep regenerating the object in order to try out 
+	different thresholds. Now saves the individual cells firing rate so we 
+	can threshold the rates in the plot function. 
+@frdiff/plus.m: Now adds the frmat and frSetIndex fields added to allow the 
+	plot function to threshold the firing rates of the individual cells 
+	before computing the windowed noise correlation. 
+
+July-30-2005
+@adjspikespsth/plot.m: Fixed bug that was not changing directories to the 
+	cluster directory before trying to instantiate the stiminfo object. 
+@frdiff/plot.m: Changed default RatePercentile to 75. Changed 
+	HistFRNoiseCorr option to HistWinFRNoiseCorr to prevent confusing 
+	windowed noise correlations with the PSTH noise correlation. Added 
+	option to create scatter plot of the windowed noise correlations versus 
+	the average rate in each window. The 2D histogram now plots only points 
+	that are significant and above the rate percentile threshold. Now plots 
+	the firing rates of each cell, as well as the thresholds for each cell, 
+	in addition to the average rate. This way, we don't have to use a 
+	nptgroup object to plot the firing rates of each cell. Added code to 
+	plot histograms of the windowed noise correlations for all bins above 
+	threshold for all cell pairs. 
+@frdiff/plot.m: Now labels all windowed noise correlation plots as 
+	'Windowed Noise Correlation'. 
+
+August-02-2005
+@frdiff/plot.m: Added heterogeniety boxplot of windowed noise correlation 
+	values, which also displays the PSTH noise correlations. Modified all 
+	code to check for significance to find values that are strictly less 
+	than CorrPThresh. 
+
+August-03-2005
+@frdiff/plot.m: Added 3D scatter plot of percentile rates versus windowed 
+	noise correlations. Now uses average rate percentile instead of average 
+	rate in the 2D histograms of rate versus windowed noise correlations. 
+	Fixed bug that failed to properly initialize windowed noise correlation 
+	data when specifying HistBinsY. 
+
+August-04-2005
+@frdiff/plot.m: Changed RatePercentile argument back to 75 so that prctile 
+	function call will work properly. The conversion from firing rates to 
+	percentiles now includes scaling by 100 so we can use the same 
+	RatePercentile argument. Added CLims argument to specifiy the scale of 
+	imagesc so we can plot the intra-group and inter-group pairs on the 
+	same color scale. Added code to create 2D histograms and 3D 
+	scatterplots of windowed noise correlations versus rate percentile for 
+	all pairs in an object. Fixed bug in the conversion from rate to 
+	percentiles that failed to correctly calculate the number of bins in 
+	each data set. Changed axis labels from Percentile Rate to Rate 
+	Percentile since the latter seems more correct. Now correctly labels 
+	the 2D histogram plots as Mean Rate Percentile instead of Mean Rate. 
+	Now uses dotted lines to draw the percentile threshold in the FRMean 
+	option so as to avoid obscuring the actual firing rates. Removed 
+	"intra-group" from the title of the VAngCorr plot since it can also be 
+	used for inter-group pairs. 
+
+August-05-2005
+@adjspikes/plus.m: Added code to ignore the new TossedSpikes when adding 
+	old objects without that field. Empty arrays are used instead. 
+@frdiff/plot.m: Added option to ignore 0's when computing the rate 
+	percentile. 
+@frdiff/plot.m: Now uses the percent sign instead of the word "percentile" 
+	in the axis labels. 
+@frdiff/plot.m: Fixed missing data points in the firing rate plots due to 
+	zero bins being replaced by nan's when the NoZerosPercentile argument 
+	is used. The percentile calculation now uses a copy of the frmat 
+	variable so the plot is not affected.  
+
+August-08-2005
+@frdiff/plus.m: Modified to merge the new wincv field. 
+@frdiff/plot.m: Renamed FRWinNoiseScatter3 argument to WinFRNoiseScatter3 
+	to be more consistent with other arguments. Commented out code to 
+	create 3D plots since it is hard to interpret the values. Now uses 
+	scatter command instead with rate (in percent) of first cell versus the 
+	second cell and the color of each point being the windowed noise 
+	correlation value. Fixed bug that was using nbins, which could be 
+	different for different cells if we are not including zeros in our 
+	percentile calculation, instead of frmrows to create data vectors. 
+	Added code to plot cv in percent of cell 1 versus cell 2 along with the 
+	windowed noise correlation values in color. 
+@frdiff/frdiff.m: Added code to compute coefficient of variation across 
+	repetitions for each bin and store in new wincv field. 
+@frdiff/frdiff.m: Now saves the standard deviation instead of the cv since 
+	we can always get the cv by dividing the standard deviation by frmat. 
+	Renamed data field wincv to winstd. 
+@frdiff/plot.m: Added option to plot CV or standard deviation. Updated to 
+	use winstd field instead of wincv. Now correctly labels CV and standard 
+	deviation plots. 
+@frdiff/plus.m: Updated to merge winstd field instead of wincv. 
+@frdiff/frdiff.m: Now correctly removes the scaling factor of 100 when 
+	saving the standard deviation. 
+@frdiff/plot.m: Now correctly checks for the WinStdNoiseScatter option. 
+	Added plot of standard deviation as a function of time, and modified 
+	the plot of CV as a function of time to make use of the new winstd 
+	field. 
+
+August-09-2005
+@firingrate/private/CalcFiringRate.m: Now correctly converts spike_matrix 
+	to rate when the Rate argument is specified. 
+@frdiff/plot.m: Added code to specify the scale of the colobar for scatter 
+	plots using the CLims argument. Renamed NoZerosPercentile argument to 
+	PercentileWithZeros since we are mostly calculating percentiles without 
+	0's now. Renamed ScatterNoInsigP argument to ScatterWithInsigP since we 
+	are mostly leaving out the insignificant values now. Added XLim and 
+	YLim arguments to set the x- and y-axes limits. Added FontName, 
+	FontSize, NoTitle and TickDir arguments to format plots for 
+	manuscripts. Fixed bug that was trying to use frmat before initializing 
+	it. 
+
+August-20-2005
+@frdiff/plot.m: Added option to compute firing rate differences only for 
+	bins that are above the threshold for firing rate for both cells. 
+	Reorganized code so that the conversion of firing rates to percentile 
+	is performed at the beginning of each section (i.e. 
+	if(isempty(Args.NumericArguments))) instead of in each separate option 
+	inside each section. 
+
+August-23-2005
+@shufflesync/shufflesync.m: Added help comments to document the various 
+	optional input arguments. 
+
+August-24-2005
+@shufflesync/shufflesync.m: Now recalculates surrogate data file, and data 
+	file if RedoDataFile is also specified, even when the result file is 
+	present. This way we can regenerate the files without having to remove 
+	the result files. 
+
+September-01-2005
+@shufflesync/private/shufflesyncsurr.m: Modified comments to correct 
+	grammar. Commented out redundant else statement. 
+@shufflesync/plot.m: Modified comments to clarify the different subsets of 
+	data that are plotted. 
+@frdiff/plot.m: Removed "%" from labels of CV plots. Now correctly 
+	transposes the indices of bins in which the firing rate of both cells 
+	exceed the threshold before applying to frdiff which is organized in 
+	rows instead of columns. This applies only to the DiffThreshBins 
+	option. 
+@shufflesync/private/computeSurrData.m: Modified comments to clarify 
+	algorithm steps. 
+
+September-08-2005
+@frdiff/plus.m: Now adds the vector angle p-values. 
+@frdiff/frdiff.m: Now saves the the p-value returned by the vector 
+	similarity calculation. 
+@latency/plot.m: Added option to specify threshold for cells with refresh 
+	or frame rate artifacts. Now looks for frame rate power as well. Added 
+	option to specify number of refreshes per frame for the different 
+	refresh rates. Fixed bugs that was not selecting just the first index 
+	that exceeded the refresh rate. Commented out code that used the mean 
+	of the frequencies above and below the refresh rate to check for 
+	artifacts since the resulting ratio was much closely spaced than just 
+	using the frequency above the refresh rate. Now marks the cells with 
+	refresh artifacts with an asterisk in the title when doing population 
+	plots. 
+@frdiff/plot.m: Now plots the firing rate differences along with the rates 
+	of the individual cells when using the FRMean option. Now uses the 
+	p-values for the vector angle calculation to plot the significant and 
+	non-significant vector angles. 
+@frdiff/frdiff.m: Added code to compute Spearman correlation coefficient. 
+@frdiff/plus.m: Added code to add the Spearman correlation coefficients. 
+@frdiff/plot.m: Added code to plot Spearman correlation coefficients. 
+
+September-22-2005
+@shufflesync/plot.m: Added ColorBar and CLims optional input arguments to 
+	add colorbar and to specify color scale used in the pcolor plots.
+	
+October-18-2005
+@frdiff/plot.m: Added NoDiff option to plot PSTH for both cells without 
+	the difference so we can look at the bins that are above threshold
+	for both cells more clearly. Now plots only the bins that are above
+	threshold when the FRMean option is specified withe DiffThreshBins
+	option. Moved DiffThreshBins calculations for the population data to
+	the start of the population data section so that all applicable
+	options like Corr, SpCorr, VAng, will work.
+
+October-21-2005
+@shufflesync/private/computeSurrData.m: Reordered initialization of psths 
+	cell array so we eliminate need to alter memory size. 
+@shufflesync/shufflesync.m: Updated help comments for the WindowIncrBins 
+	and WindowBins arguments to use number of bins instead of ms. Added 
+	code to compute extended window limits so we can compute the xcorr 
+	without boundary effects. Now loads the data file if it is present in 
+	order to have access to required variables. 
+@shufflesync/private/shufflesyncsurr.m: Now uses the extended window limits 
+	to check for repetitions with spikes in both cells. Might need to be 
+	refined to find repetitions in which there are spikes in the central 
+	window of one cell and spikes in the extended window of the other cell. 
+	Optimized code to remove repeated find calls. Now uses the information 
+	returned from unique and intersect to identify spikes. Optimizations 
+	were applied to the following sections: xcorr of the data, xcorr of the 
+	shift predictor and shuffling of the remainder of the repetitions. 
+	Moved seeding of the random number generator out of the loop over 
+	repetitions with paired spikes since we are not likely to exceed the 
+	number of random numbers over all repetitions. Now initializes sptimes 
+	cell array by setting the second entry first. Now uses a separate 
+	variable called sptime when shuffling the remaining repetitions 
+	(instead of using sptimes) so there is no confusion when the second 
+	entry of sptimes is initialized at the beginning. 
+
+October-25-2005
+@shufflesync/private/shufflesyncsurr.m: Added code to compute xcorr without 
+	boundary effects using central and extended windows. Now also checks 
+	for refractory period violations in the extended window when generating 
+	surrogates. 
+@shufflesync/shufflesync.m: Fixed bug in call to the max function. Now 
+	saves startlimits and endlimits in the data file so shufflesyncsurr 
+	does not have to recreate it each time. 
+
+October-26-2005
+@shufflesync/private/shufflesyncsurr.m: Added check for empty trialspiken 
+	before trying to use sub2ind with empty matrices. Now correctly sets 
+	the start and end limits for all reps with spikes instead of just the 
+	reps in repsboth. This way, the rest of the code can use the same start 
+	and end limits to get the spike times. Added several fixes to get 
+	around problems working with empty matrices. 
+@shufflesync/shufflesync.m: Now no longer uses sparse matrices for the 
+	endlimits array since code using empty matrices was not working with 
+	sparse matrices. 
+@shufflesync/shufflesync.m: Removed code that have been commented out. 
+ShihChengChangeLog.txt: 
+@shufflesync/private/shufflesyncsurr.m: Removed code that have been 
+	commented out. 
+@shufflesync/private/shufflesyncsurr.m: Added fixes to the shift predictor 
+	code to correctly handle empty matrices. 
+
+October-27-2005
+@shufflesync/private/computeSurrData.m: Added check for empty spiketrains 
+	which are now possible due to the use of extended windows. 
+@shufflesync/plot.m: Fixed bug in which the input argument SyncSpikes was 
+	not declared a flag. Added Windowed option to plot data window by 
+	window (not completed). 
+@shufflesync/private/launchshsy: New bash script to use batch to run 
+	shufflesyncsurr and computeSurrData on a node.
+@shufflesync/private/shsynodelaunch: New bash script to divide all pairs 
+	among the available nodes and then launch the computations by calling 
+	launchshsy on each node. 
+@shufflesync/private/computeSurrData.m: Moved computation of mean of 
+	histogram counts to avoid error when there were no spikes. 
+@shufflesync/private/launchshsy: Replaced pathname with "~" with absolute 
+	path. 
+@shufflesync/private/launchshsy: Now correctly returns to the original 
+	directory before trying to move to the next directory. 
+@shufflesync/private/launchshsy: Now includes the correct path prefix when 
+	finding data files to copy. 
+@shufflesync/private/shsynodelaunch: Now no longer removes n4.txt which 
+	contains the location of each dataset so we can figure out where to go 
+	to get access to the surrogate data. 
+@shufflesync/private/launchshsy: Now changes directory to the data 
+	directory before issuing find command so that cpio will copy paths 
+	relative to the data directory instead of including the entire 
+	/home/syen/cat/newcatdata path. 
+@shufflesync/private/launchshsy: Now correctly specifies the full path to 
+	the file s1.txt for removal. 
+
+October-28-2005
+@shufflesync/private/shufflesyncsurr.m: Now uses histcie with the 
+	'DropLast' option instead of hist to ignore the values outside the 
+	range of interest. 
+@shufflesync/shufflesync.m: Now creates and saves lagbins2 which will be 
+	used with histcie to ignore values outside the range of interest. This 
+	was necessary since doing hist with the data from extended windows was 
+	leading to very large values in the first and last bins since they 
+	include all the values outside the range of interest. 
+@shufflesync/private/shufflesyncsurr.m: Fixed bug where hist was not 
+	changed to histcie. 
+@shufflesync/private/shufflesyncsurr.m: Now explicitly converts xcreps to 
+	full matrix to avoid errors in histcie when xcreps is a sparse matrix. 
+@shufflesync/plot.m: Now only plots the black (significant) dots by default 
+	when using the XCorr argument. The other dots can be plotted when using 
+	the new AllZScore3 argument. 
+
+October-30-2005
+@shufflesync/plot.m: Added code to plot the xcorr for the data and the 
+	shift-predictor versus the distributions from the surrogates. 
+@shufflesync/get.m: Added code to return number of analysis windows so that 
+	we can use InspectGUI to pan through the different windows in a cell 
+	pair. 
+CatCmds.m: Merged with Charlie's version. 
+
+October-31-2005
+@shufflesync/plot.m: Added HighlightRasters argument so the default raster 
+	plot does not highlight spikes, which can sometimes be hard to see. 
+	Added code to display windowed rasters which can be used in combination 
+	with the display of windowed xcorr to check the data. 
+@shufflesync/plot.m: Added XLim argument so we can plot the windowed xcorr 
+	on the same scale. Otherwise, because of the different shuffle 
+	magnitude, the time lags will all be different. Padded data for pcolor 
+	plot in windowed xcorr so that it now correctly displays all data and 
+	labels the bins correctly. Now computes the maximum spike pairs in each 
+	xcorr window before computing the histogram so that the points 
+	representing the data will be visible. Now plots xcorr data exceeding 
+	z-score threshold in black and everything else in white. Added colorbar 
+	so we can compare data from different shuffle magnitudes. 
+
+November-01-2005
+@shufflesync/private/shufflesyncsurr.m: Fixed bug that was not saving spike 
+	times from the data when creating shuffled surrogates for repetitions 
+	not shuffled in the xcorr analysis.  
+@shufflesync/plot.m: Moved PSTH section to after Windowed option so we can 
+	use Windowed and PSTH to plot windowed PSTH data. Added code to plot 
+	windowed PSTH (incomplete). 
+
+November-04-2005
+@shufflesync/plot.m: Added input argument to specify PSTH smoothing window. 
+	Added code to plot windowed psth of data as well as the distribution of 
+	each bin in the psth for the surrogates. 
+@shufflesync/shufflesync.m: Now saves subbins and binSize which is used by 
+	the plot function to align the windowed psth with the rasters. 
+
+November-06-2005
+@shufflesync/shufflesync.m: Now takes a PSTHWindow input argument which is 
+	then saved to the surrogate data file so that it can be used by the 
+	function computeSurrData. Now correctly recomputes data files even when 
+	the result file is present. 
+@shufflesync/private/computeSurrData.m: Added code to compute z-scores for 
+	each bin of the smoothed PSTH's of both cells by comparing with the 
+	mean and std of each bin in the smoothed PSTH's of the surrogates. The 
+	result is now saved to the result file. 
+@shufflesync/plot.m: Removed redundant lines of code and code that had been 
+	commented out. 
+@shufflesync/private/computeSurrData.m: Now correctly loads previous frame 
+	for window numbers larger than 2 rather than 1. 
+
+November-07-2005
+@shufflesync/plot.m: Renamed AllZScore3 argument to AllZ3 to make it easier 
+	to use. Added SmoothedPSTH argument to use the smoothed PSTH to look 
+	for differences between the data and the surrogates. 
+@shufflesync/plot.m: Added Z3Norm and Z3Psth arguments to turn on and off 
+	bins with z-scores greater than 3 but do not meet one or the other of 
+	the normality or psth-difference constraint. Now correctly finds the 
+	bins in which the psth-difference is not above the z-score threshold. 
+
+November-08-2005
+@shufflesync/name2index.m: New function to convert time to window number so 
+	we can enter a time while inspecting the windowed xcorr or psth and 
+	have it plot the relevant window. 
+@shufflesync/plot.m: Now uses white for significant bins in the xcorr and 
+	black for the rest of the values to improve visibiltity on the dark 
+	backgrounds. Added hack to try to relax the PSTH difference constraint. 
+@shufflesync/private/computeSurrData.m: Now correctly uses PSTHWindow size 
+	minus 1 to pad the PSTH and to extract the final values from the 
+	smoothed PSTH. 
+@shufflesync/plot.m: YLim now defaults to empty matrix instead of [-10 10] 
+	so we can just check for empty matrix to see if we should use the range 
+	in the data. This was necessary in order to fix the y-axis of the 
+	windowed psth and xcorr plots. Added checks for empty sptrains in the 
+	surrogate files as well as other minor bug fixes taken from recent 
+	changes to computeSurrData.m. Now uses the binSize field saved in the 
+	object since it is now the actual bin size instead of the requested bin 
+	size. Now correctly loads the previous frame only for windows greater 
+	than 2. Now correctly uses PSTHWindow size minus 1 to pad the PSTH and 
+	to extract the final values from the smoothed PSTH. Added code to 
+	convert PSTH to rates so we can plot them with the right scale. 
+	Removed shift predictor data points from the windowed xcorr plot to 
+	improve visibility. Now plots the data using a line plot. Now 
+	highlights significant bins with a white square, similiar to the 
+	windowed PSTH plot. 
+@adjspikesxcorr/plot.m: Updated getDataDirs call to include 'DirString' 
+	argument. 
+@shufflesync/shufflesync.m: Now saves the actual bin size used to partition 
+	each frame window as well as the number of stimulus repetitions. This 
+	makes it easier for the plot function to access these frequently used 
+	variables instead of having to load them from the data file. The 
+	requested bin size which used to be stored in obj.data.binSize is still 
+	available in obj.data.Args.BinSize. 
+
+November-09-2005
+@shufflesync/plot.m: Now only includes psth bins that will be used by a 
+	window of size Args.PSTHWindow centered on the first bin in the central 
+	window. Now selects the bins that correspond to centering the 
+	PSTHWindow on the first and last bin in the central window. 
+@shufflesync/private/computeSurrData.m: Added use of halfwinsize again to 
+	correctly pad with just enough bins and to extract the right indices 
+	representing the central window. 
+@shufflesync/plot.m: Now only converts counts to rate when plotting so as 
+	to avoid problems with rounding when computing histograms and to avoid 
+	having to specify the bin size for the histograms.  
+@shufflesync/plot.m: Now checks for empty YLim before use in XCorr plot. 
+	Added missing semicolon after computing ratescale variable. 
+@shufflesync/name2index.m: Added else statement so output argument will be 
+	set by default. 
+
+November-10-2005
+@shufflesync/plot.m: Added ExpandPSTH option to skip resizing the windowed 
+	PSTH plot to match the central window in the raster plot. This was 
+	necessary so we can increase the visibility of the PSTH when not 
+	plotted with the rasters. Added fix for pcolor bug in Matlab by 
+	changing Renderer to Painters. Added MinXCCount argument to change the 
+	minimum number of spike pairs to use as a constraint instead of the 
+	noramality test. Now if the NormTest is anything but jbtest or 
+	lillietest, it will use the minimum spike pairs constraint. This way 
+	we can actually make use of the else statement in the code. Now plots 
+	the windowed xcorr and psth data using larger symbols for increased 
+	visibility. Added xlim call to xcorr plot in case we ever need to 
+	constrain the time window. 
+
+November-12-2005
+@shufflesync/plot.m: Added option to plot xcorr data only without 
+	highlighting bins that were significant. This was necessary to create 
+	figures for the SFN05 talk. Added option to not show the title (again 
+	for the SFN05 talk). Now considers psth to be different from the psth 
+	of the surrogates if either of the cells contain two or more bins that 
+	exceed the z-score threshold. This seems to work a lot better in not 
+	rejecting too many significant correlations. Z3Psth option now plots 
+	bins above the z-score threshold and found to be normally distributed, 
+	or have counts larger than the minimum. Added code to remove the x-axis 
+	labels when doing group plots. 
+@shufflesync/plot.m: Added option to create summary plot over all shuffle 
+	values. 
+
+November-21-2005
+@shufflesync/plot.m: Changed CLims input argument to CLim to make it more 
+	consistent with XLim and YLim input arguments. Modified histogram bins 
+	passed to histn so they correctly specifiy the bins edges instead of 
+	the center of the bins. Added code to use CLim argument to set the 
+	color scale when plotting summary plots. Now no longer removes the 
+	x-axis unless the LabelsOff argument is specified. The old code that 
+	checked for GroupPlotIndex did not work as it would always remove the 
+	x-axis since the different group plots (corresponding to the different 
+	shuffle values) are plotted on the same axis. 
+@frdiff/plot.m: Added code to compute mean and max differences between 
+	normalized firing rates. Added code to return arbitrary variables so we 
+	can grab the normalized data for distribution testing. 
+
+December-07-2005
+@shufflesync/name2index.m: Renamed prefix to specify time to "t: " instead 
+	of "w: " to make it more intuitive.  
+@firingrate/private/CalcFiringRate.m: Fixed bug that was not saving the 
+	proper histogram bin edges to the variable timebins. 
+
+December-13-2005
+getSurrogateSpikes.m: Added fprintf statement to track down 0 isi's. 
+
+March-20-2006
+@psparse/subsref.m: New class to compute population sparseness. 
+@psparse/subsasgn.m: New class to compute population sparseness. 
+@psparse/psparse.m: New class to compute population sparseness. 
+@psparse/get.m: New class to compute population sparseness. 
+@frdiff/plot.m: Added option to plot median differences instead of mean 
+	differences. Transposed frdiffs and frdiffctrl so it is more consistent 
+	with other variables. Updated code that used frdiffs and frdiffctrl to 
+	take into account the transpose operation. Modified axis labels to be 
+	more consistent with labels in figures for the heterogeneity paper. 
+@psparse/test.m: New class to compute population sparseness. 
+@psparse/plus.m: New class to compute population sparseness. 
+@psparse/plot.m: New class to compute population sparseness. 
+
+April-20-2006
+@shufflesync/name2index.m: Now correctly looks for "t:" instead of "w:" in 
+	the strncmpi command. 
+
+April-24-2006
+@variability/cmds.m: New file to save commands relevant to this class. 
+@psparse/test.m: File renamed to cmds.m. 
+@adjspikesxcorr/cmds.m: New file to save commands relevant to this class. 
+@psparse/cmds.m: New file to save commands relevant to this class. 
+@shufflesync/cmds.m: New file to save commands relevant to this class. 
+@frdiff/cmds.m: New file to save commands relevant to this class.
+
+May-02-2006
+@poissonctrl/plus.m: New class to compute PSTH correlation and vector angle 
+	for Poisson model.
+@poissonctrl/subsasgn.m: New class to compute PSTH correlation and vector 
+	angle for Poisson model.
+@poissonctrl/poissonctrl.m: New class to compute PSTH correlation and 
+	vector angle for Poisson model.
+@poissonctrl/plot.m: New class to compute PSTH correlation and vector angle 
+	for Poisson model.
+@shufflesync/cmds.m: 
+@poissonctrl/cmds.m: New class to compute PSTH correlation and vector angle 
+	for Poisson model.
+@poissonctrl/get.m: New class to compute PSTH correlation and vector angle 
+	for Poisson model.
+@poissonctrl/subsref.m: New class to compute PSTH correlation and vector 
+	angle for Poisson model.
+
+May-04-2006
+@poissonctrl/poissonctrl.m: Added code to compute the joint event 
+	probability. Added option to turn specific calculations on or off. Now 
+	only runs the correlation analysis for default. Now also saves the mean 
+	firing rate for the site so that we can create comparisons in the 
+	instantaneous firing rate difference analysis. 
+@poissonctrl/cmds.m: Added command to compute joint event probablity of the 
+	Poisson null hypothesis. 
+@jointevprob/cmds.m: New class to compute joint events using PSTH computed 
+	at the frame rate. This allows us to compare the data to the data 
+	obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/subsref.m: New class to compute joint events using PSTH 
+	computed at the frame rate. This allows us to compare the data to the 
+	data obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/plus.m: New class to compute joint events using PSTH computed 
+	at the frame rate. This allows us to compare the data to the data 
+	obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/get.m: New class to compute joint events using PSTH computed 
+	at the frame rate. This allows us to compare the data to the data 
+	obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@frdiff/cmds.m: Removed commands to compute Poisson model for inter-group 
+	data since it is not really relevant. The Poisson model only tests for 
+	Poisson variability around a mean rate for neighboring cells. Added 
+	code to compare instantaneous firing rate differences in the data to 
+	the Poisson model for each site instead of the Poisson model for each 
+	pair. 
+@poissonctrl/plus.m: Updated to include fields for the joint event 
+	probability. 
+@jointevprob/subsasgn.m: New class to compute joint events using PSTH 
+	computed at the frame rate. This allows us to compare the data to the 
+	data obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/plot.m: New class to compute joint events using PSTH computed 
+	at the frame rate. This allows us to compare the data to the data 
+	obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/jointevprob.m: New class to compute joint events using PSTH 
+	computed at the frame rate. This allows us to compare the data to the 
+	data obtained from the Poisson null hypothesis (calculated in the class 
+	poissonctrl). 
+@jointevprob/cmds.m: Added call to plot function.
+@poissonctrl/cmds.m: Added commands to create heterogeneity plots for psth 
+	correlation and joint event probability along with the data from the 
+	Poisson null hypothesis. 
+
+May-09-2006
+@poissonctrl/cmds.m: Moved code to compute event probabilities to 
+	poissonctrl constructor. Added code to compute percentage of windows 
+	with population sparseness z-scores greater than 2. 
+@poissonctrl/plus.m: Moved order of fields so ncells is added first. 
+	Updated to add pszscore and kwp fields which are used by the 
+	population sparseness calculation. 
+@poissonctrl/poissonctrl.m: Added option to compute population sparseness 
+	for Poisson control. The surrogate mean and std PS values are used to 
+	convert data PS values to z-scores. Kruskal-Wallis test is also 
+	performed to test if the data is different from the surrogates. Added 
+	code to either set negative surrogate firing rates to 0 (default) or 
+	to take the absolute value if the optional input argument 'Abs' is 
+	specified. Added 'UseNCells' option so that population sparseness is 
+	computed for all cells at a site. Previously, the code performed all 
+	calculations for pairs. Now sets the default values to nan so if a 
+	calculation is skipped the data in the object won't be misinterpreted. 
+@poissonctrl/cmds.m: Added commands to compute percentage of windows with 
+	rates higher than the 75th percentile and have z-scores greater than 2. 
+
+May-22-2006
+@variability/cmds.m: Added comments to code that computes which cells have 
+	0 ISIs. 
+@adjspikes/plus.m: Commented out code that concatenates the dlist field 
+	since it is an irrevelant field that does not exist in newer objects. 
+
+June-05-2006
+CatCmds.m: Moved shufflesync commands to separate file shufflesync/cmds.m. 
+@shufflesync/cmds.m: Added code for shufflesync objects from CatCmds.m. 
+@shufflesync/private/computeSurrData.m: Added code to compute mean and std 
+	of truncated normal distributions using mle. 
+@shufflesync/plot.m: Modified to get handle to magenta lines before xlimits 
+	are changed as it sometimes does not work otherwise. 
+@shufflesync/private/shufflesyncsurr.m: Modified code to add option to 
+	obtain the number of frames from the datafile instead of from the input 
+	arguments. 
+
+June-06-2006
+@variability/cmds.m: Added code to look for duplicate spike times in all 
+	surrogate files instead of just the first surrogate file (incomplete). 
+
+June-16-2006
+@shufflesync/plot.m: Commented out code to display the magenta lines for 
+	the spike rasters as it is causing problems with Matlab 7. 
+@adjspikes/plot.m: Added 'ReturnVars' input argument so it will work with 
+	the new developmental version of InspectGUI. Added code to return 
+	arguments including Args structure in order to work with the new 
+	develeopmental version of InspectGUI. 
+@frdiff/plot.m: Added input arguments common to nptdata objects that will 
+	be taken out by new developmental version of InspectGUI. Added code to 
+	return variables, including the Args structure so it will work with the 
+	new developmental version of InspectGUI. 
+
+June-20-2006
+@ascorr/cmds.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@ascorr/ascorr.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@ascorr/plot.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@ascorr/plus.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@ascorr/subsref.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@shufflesync/plot.m: Added comments to match if/else/end statements to make 
+	code more readable. 
+@ascorr/get.m: New class to compute correlation coefficients between a pair 
+	of cells for individual repetitions. 
+@ascorr/subsasgn.m: New class to compute correlation coefficients between a 
+	pair of cells for individual repetitions. 
+@frdiff/plot.m: Moved code to paint the background of the pairs that belong 
+	to the same group the same color into a new function GroupedIntraPlot. 
+@ascorr/plus.m: Updated to add correlation coefficients of the entire 
+	response.
+@latency/latency.m: Added option and code to plot the latency of multiple 
+	frames. Need to modify to make it more general. 
+@ascorr/plot.m: Added code to plot correlation between entire response. Now 
+	uses the new function GroupedIntraPlot to delimit pairs that belong to 
+	the same group. 
+@ascorr/cmds.m: Now includes code to add PSTH correlation to ascorr/plot.
+@ascorr/ascorr.m: Added code to compute corrcoef between the entire 
+	responses of a pair of cells. 
+
+July-08-2006
+@ascorr/ascorr.m: Now calls histcie with 'DropLast' to avoid introducing a 
+	false correlation with the zero at the end of the counts returned by 
+	histcie. Added code to compute vector angles for individual repetitions 
+	as well. 
+@shufflesync/private/shufflesyncsurr.m: Fixed bug that was not setting 
+	varargin to the variables startwindow and endwindow before using it. 
+@frdiff/frdiff.m: Modified to take the transpose before calling 
+	vecsimilarity since the function has been modified to take data in 
+	columns rather than rows. 
+@frdiff/cmds.m: Added commands to compute paired intra-inter PSTH 
+	correlation differences.
+@ascorr/cmds.m: Added commands to plot vector angles. 
+@sparsity/private/Sparseness.m: Added options to compute sparsity for 
+	different sized windows and to ignore the boundaries of the movie frame 
+	(i.e. windows are equally spaced). 
+@sparsity/plus.m: Removed code to add unnecessary object field dlist. 
+	Hopefully won't cause problems with old objects. 
+@ascorr/plot.m: Added option to plot vector angles. Modified to plot the 
+	correlation and vector angles obtained by treating the responses of all 
+	repetitions as one continuous time series only if the ShowCont argument 
+	is used. Removed redundant LabelsOff code. 
+@poissonctrl/cmds.m: Added code to plot poisson control data on top of data 
+	from the correlation and vector angles of individual repetitions. 
+@ascorr/plus.m: Added code to add vector angle fields. 
+@sparsity/sparsity.m: Added options to compute sparsity for different sized 
+	windows and to ignore the boundaries of the movie frame (i.e. windows 
+	are equally spaced). Removed unnecessary object fields dlist and 
+	setIndex. Now saves Args in the object so we can check if a saved 
+	object matches the Args that a user has specified (not implemented 
+	yet). 
+
+July-10-2006
+@ascorr/cmds.m: Added commands to compute correlation coefficients of movie 
+	and m-sequence responses and to compute the paired t-test between them. 
+@ascorr/ascorr.m: Added code to compute correlation coefficient using the 
+	ispikes object. This way we can compare correlation between movie 
+	responses and m-sequence responses. Added WindowSize argument to alter 
+	window sizes used in computing histogram of spike counts before taking 
+	the correlation. Only the simplest histogram is implemented right now, 
+	which involves taking the entire response as one time series. Added 
+	option to compute correlation coefficient without first subtracting the 
+	mean out of the individual responses (does not appear to make any 
+	difference). 
+
+July-14-2006
+@ascorr/plot.m: Added option to plot spike times in ispikes object to get 
+	around problems with the plot function for the ispikes object. 
+@ascorr/cmds.m: Added unix commands for creating list of common cells 
+	between movie and msequence sessions. 
+@ascorr/ascorr.m: Added code to break up m-sequence responses into pseudo 
+	repetitions to compare to movie responses. Currently requires that the 
+	user specifies the number of frames presented in the movie session for 
+	the same cell, but ideally should be able to get the information 
+	automatically (not implemented). Added code to compute a few measures 
+	for determining responsiveness of m-sequence responses. Now uses frame 
+	information from stiminfo object to set up histogram bins instead of 
+	going from 0 to the max spike time, which might leave out a number of 
+	frames with zero spikes. 
+@sparsity/cmds.m: New file to keep track of commands making use of the 
+	sparsity object. 
+
+July-19-2006
+@poissonctrl/cmds.m: 
+@frdiff/plot.m: Fixed bug in returning output arguments.
+@poissonctrl/plot.m: Added code to plot the results of the vector angle, 
+	event probabilities, and population sparseness calculations. 
+@poissonctrl/plus.m: Updated to add new fields to store median and 
+	quartiles instead of mean and std. 
+@ascorr/cmds.m: 
+@poissonctrl/poissonctrl.m: Added code to compute correlations, vector 
+	angles and population sparseness for surrogates with different 
+	properties. New properties include surrogates with a specified multiple 
+	of the standard deviation (StdMultiple), surrogates with variability 
+	equivalent to the variability of all repetitions from all cells added 
+	together (RepsVar), surrogates that have the same amount of average 
+	variability in spike count for the entire repetition (CellsVar), 
+	surrogates where the variability in each frame is computed from the 
+	average variability of each of the cells (FrameVar), and surrogates 
+	where the max variability was taken instead of the average (FanoMax). 
+	Also replaced mean and std fields with median and quartiles since 
+	distributions are not Gaussian.
+@frdiff/cmds.m: 
+
+October-07-2006
+@responsiveness/plus.m: Now combines the new fields added to save the 
+	results of testing distributions of correlation coefficients for data 
+	and control.
+@responsiveness/private/CalcResponsiveness.m: Now no longer takes stiminfo 
+	object as input since we were only using the stiminfo object to get the 
+	number of frames and repetitions. These numbers can be obtained from 
+	the adjspikes object directly. Now uses a much more efficient method 
+	to compute the responsiveness measure. Added code to create control 
+	data and test for differences in the distributions of correlation 
+	coefficients computed from the data and from the control data. By 
+	default, the control data is created by shuffling spike counts between 
+	repetitions but the shuffling can be expanded to include shuffling 
+	between time bins if the 'RandTimeTrial' option is specified when 
+	calling the responsiveness constructor. Added code to plot adjspikes 
+	object together with the distributions of correlation coefficients 
+	computed from the data and the control. 
+@responsiveness/responsiveness.m: Removed 'stimInfoDir' argument since the 
+	stiminfo object is no longer needed. The stiminfo object was used to 
+	get the number of frames and the number of repetitions and these can be 
+	obtained directly from the adjspikes object. Removed the 'Group' 
+	argument since it is not being used. Added 'PlotDist' to plot 
+	distributions of correlation coefficients for data and control while 
+	creating the object. This is useful since saving the coefficients will 
+	result in very large objects. Added 'RandTimeTrial' option to create 
+	control data by shuffling spike counts over all time bins and 
+	repetitions. This is an alternative to the control data generated by 
+	default which only shuffles spike counts over repetitions without 
+	shuffling time bins. Added fields to save results of testing 
+	distributions of correlation coefficients for data and control. 
+	Removed unused fields 'dlist' and 'setindex' from the object. 
+@shufflesync/private/computeSurrData.m: Temporarily commented out code to 
+	compute mean and standard deviations of truncated normal distribution 
+	so we can recompile this code using the compiler. 
+@sparsity/private/Sparseness.m: Added code to convert spike counts to 
+	firing rates. 
+@responsiveness/private/CalcResponsiveness.m: Now turns off divideByZero 
+	warning before calling corrcoef function. Now generates a large number 
+	of random surrogates to ensure a stable distribution of correlation 
+	coefficients will be used to compare to the distribution from the data. 
+@responsiveness/responsiveness.m: Added 'RandSets' argument to compute 
+	distribution of correlation coefficients of a large number of surrogate 
+	sets. 
+@frdiff/frdiff.m: Added option to compute noise counts directly from the 
+	adjspikes object instead of using the firingrate object. 
+@poissonctrl/poissonctrl.m: Added 'SumVar' argument to generate surrogates 
+	where the variance is equal to the sum of the variances of the 
+	individual cells. Added 'StdMinFR' argument exclude bins below a 
+	certain firing rate. Added 'CellPopVar' argument to compare variance 
+	between repetitions from an individual cell versus repetitions between 
+	cells. 
+@poissonctrl/plot.m: Added option to plot mean and standard deviation of 
+	population sparseness metric for poisson control data. 
+@sparsity/sparsity.m: Added 'Rate' argument to convert spike counts to 
+	firing rates. 
+
+October-10-2006
+@psparse/plot.m: Added 'BoxPlotColors' and 'BoxPlotSymbol' arguments to 
+	over-ride the default colors. 
+@frdiff/plot.m: Changed heterogeneity plot so we can plot more points. This 
+	was necessary since we are now using 88 single units in all our 
+	analyses. 
+
+October-11-2006
+@psparse/plot.m: Added argument to modify marker size in boxplot. 
+
+November-06-2006
+@poissonctrl/poissonctrl.m: Added code to turn off warnings about 
+	divideByZero. Moved initialization code so that all fields are 
+	initialized for all options. Improved code to extract unique 
+	correlation values. 
+@firingrate/cmds.m: New function used to store commands using objects of 
+	this class.
+@responsiveness/cmds.m: New function used to store commands using objects 
+	of this class.
+
+November-28-2006
+@refractory/plot.m: Commented out code that plots the fitted exponential 
+	since we are no longer doing that in the spikeRecovery function. 
+spikeRecovery.m: Modified to skip fitting isi histogram to an exponential. 
+@refractory/refractory.m: Updated to skip saving the fitted exponential. 
+
+January-15-2007
+spikeRecovery.m: Commented out computation of tspikes since it is no 
+	longer used. 
+
+January-24-2007
+@variability/variability.m: Extensively modified by Xiao Xiao to compute 
+	variability in windows that are multiples of the frame duration. 
+@latency/plot.m: Added option and code to return variables so we can get 
+	the indices of cells that have a refresh artifact. Fixed bar command so 
+	it is compatible with Matlab 7. Changed default option to plot just the 
+	latency data without replication. Added 'Replicate' option to repeat 
+	the plot so frame following is more apparent. Added option to use 
+	indices in subplot titles. 
+@variability/plot.m: Modified by Xiao Xiao to work with new InspectGUI 
+	function. 
+
+January-25-2007
+@adjspikes/private/AdjustFramesVector.m: Modified to ignore the 
+	stimInfo.data.iniInfo.obj_type field so that the spikes are adjusted 
+	properly for sessions where the obj_type field is irrelevant (the type 
+	field contains the actual stimulus type presented). 
+
+February-13-2007
+@latency/plot.m: Now changes the EdgeColor as well as the FaceColor when 
+	changing the color of bar plots. 
+@variability/cmds.m: 
+@variability/plot.m: Updated help comments to include new plot options. 
+	Now changes the color of bar plots using a separate set command instead 
+	of including it in the bar command which does not work in Matlab 7. 
+getFreeFiringRate2.m: Added option and code to average free firing rate 
+	over smaller window sizes. 
+@variability/variability.m: Now loads trentropy data file into a variable 
+	called stre so that the saved variable "entropy" does not clash with 
+	the Matlab built-in function entropy. 
+
+
+April-23-2007
+@adjspikes/plot.m: Added title to plots with the 'Fast' argument so we can 
+	see which cell is being plotted.
+@poissonctrl/poissonctrl.m: Commented out redundant code that saved 
+	timebins but was not using it. 
+@poissonctrl/cmds.m: Fixed minor typo in comments. 
+@repcorr/plot.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 
+@repcorr/subsasgn.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 
+@repcorr/get.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 
+ShihChengChangeLog.txt: 
+@repcorr/plus.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 
+@repcorr/repcorr.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 
+@repcorr/subsref.m: New class to compute correlation coefficients between 
+	individual repetitions instead of using the PSTH. Could be useful in 
+	comparing movie responses to grating responses. 

@@ -1,0 +1,6 @@
+# test batch
+@ celln = 2
+while (${celln} < 41)
+	echo "unset DISPLAY; sed 's/@/${celln}/g' test.m | matlab -nojvm > tout${celln} 2>&1" | batch
+	@ celln++
+end

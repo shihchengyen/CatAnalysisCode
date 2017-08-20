@@ -1,0 +1,17 @@
+#!/bin/bash
+# sample script to submit SGE jobs with dependencies
+
+let index=0
+for i in $( cat movie-cells.txt ); do 
+	cd $i; 
+	job_string=$( echo "/Applications/MATLAB71/bin/matlab -nojvm -nodisplay -r "'"' "refractory('auto','frameavg','expfitmax',50,'save');"'"' | qsub -l matlab_license=1 -cwd -V -j y -o refqsub.out );
+ 	job_id=`echo $job_id | sed -e 's/[A-Za-z]//g' -e 's/[()".\ ]//g'`
+	if [ $index -gt 0 ]; then
+		depstr=$depstr,$job_id
+	else
+		depstr=$job_id
+		let index++
+	fi
+	cd -; 
+done
+echo "/Applications/MATLAB71/bin/matlab -nojvm -nodisplay -r "'"' "refractory('auto','frameavg','expfitmax',50,'save');"'"' | qsub -l matlab_license=1 -cwd -V -hold_jid $depstr -j y -o refqsub.out;

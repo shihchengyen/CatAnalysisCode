@@ -1,0 +1,69 @@
+#!/bin/tcsh -f
+# usage: mlqsub toolboxes script [numloops]
+# e.g. mlqsub "( Signal_Toolbox Statistics_Toolbox )" event.m
+# e.g. mlqsub "( )" event.m 36 * note space inside brackets is important
+# to get complete list of toolboxes, do lmstat -a
+
+# rename arguments
+set f1 = $1
+set script = $2
+if( $3 == "") then
+	@ loops = 1
+else
+	@ loops = $3
+endif
+
+# get features to test
+# add Matlab to list of features
+set features = ( MATLAB $f1[*] )
+@ nfeatures = ${#features}
+
+# set path of lmstat
+set lmstat = /home/programs/matlab13/etc/lmstat
+
+# loop over cells
+@ n = 1
+
+while ( $n <= $loops )
+	set avail = 1
+	@ feature = 1
+	
+	# stop checking if any feature is not available or if we have
+	# checked all features
+	while( $avail && ($feature <= $nfeatures) )
+		# check feature
+		@ total = `$lmstat -f $features[$feature] | grep Total | awk '{print $6}'`
+		# get number being used
+		@ used = `$lmstat -f $features[$feature] | grep node | wc -l`
+		if (${used} == ${total}) then
+			set avail = 0
+		else
+			@ remain = $total - $used
+		endif
+		echo "Loop ${n}: Feature ${features[${feature}]} available ${remain} of ${total}"
+		@ feature++
+	end
+	
+	if( $avail ) then
+		echo "Starting job $n"
+		# start job
+		if ( $loops > 1) then
+			# echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR; '"sed 's/@/$n/g' $script | matlab -nojvm" | qsub -V -l nodes=1 -j oe -o $PWD/mlqsub$n -N $script -
+			# echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR; '"sed 's/@/$n/g' $script | matlab -nojvm" > sm$n
+			# swarm -f sm$n -V -j oe -o $PWD/mlqsub$n -N $script
+		else
+			# no loop required so just run script
+			# echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR; '"cat $script | matlab -nojvm" | qsub -V -l nodes=1 -j oe -o $PWD/mlqsub$n -N $script -
+			# echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR; '"cat $script | matlab -nojvm" > sm$n
+			# swam -f sm$n -V -j oe -o $PWD/mlqsub$n -N $script
+		endif			
+		# go to the next cell
+		@ n++
+		# wait a little bit till matlab starts up and grabs the necessary license
+		sleep 10
+	else
+		echo "Licenses not available. Will check again in 10 mins..."
+		# features not available so wait a while and check again
+		sleep 600
+	endif
+end

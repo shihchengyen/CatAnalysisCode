@@ -1,0 +1,39 @@
+#!/bin/tcsh -f
+# usage: gSSwrapper cell#start cell#end #surr/set #sets filename [cstep dbflag]
+
+# set arguments
+@ cellstart = $1
+@ cellend = $2
+@ surrperset = $3
+@ sets = $4
+set basename = $5
+
+if( $6 == "" ) then
+	set cstep = 100
+else
+	set cstep = $6
+endif
+if( $7 == "") then
+	set dbflag = 0
+else
+	set dbflag = $7
+endif
+
+# set loop variables
+@ setn = 1
+
+while( $setn <= $sets )
+	@ celln = $cellstart
+	while( $celln <= $cellend )
+		# if first time through, check to see if directory exists
+		if(($setn == 1) && !(-e cell$celln)) then
+		    mkdir cell$celln
+		    ln -s ../rfd.mat .
+		endif
+		set gSSout = "gSSs${setn}c${celln}"
+		# save hostname in $gSSout as well as the standard out in case there were errors
+		echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR/cell${celln};'"hostname > $gSSout; ../gSS $celln $surrperset ${basename}S${setn}C${celln} $cstep $dbflag >> $gSSout 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/cell$celln/qsubs${setn}c${celln} -N gSS -
+		@ celln++
+	end
+	@ setn++
+end

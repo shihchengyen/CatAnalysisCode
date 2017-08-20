@@ -1,0 +1,13 @@
+Change Log for the Cat Directory
+
+September 23, 2004
+    Changed the constructors for both the responsiveness and sparsity classes to include the SessionDirs 
+    and Number for easy use of the get function. The plus functions were changed for the same reason. The 
+    plot functions were changed to accomidate Heterogeneity calculations for Pairs, IntraGroup and InterGroup. 
+    
+September 28, 2004
+    Cat/@responsiveness/plot and heterogeneity
+    Added a 'Bar' input to plot the responsiveness values in decending order for each group. Also modified the 
+    heterogeneity function to account for the 'Bar' input. The output under 'Bar' is a matrix of responsiveness 
+    values for each group.
+    

@@ -1,0 +1,104 @@
+function obj = adjspikes(varargin)
+% constructor for adjspikes class
+%   OBJ = adjspikes(varargin) 
+%   
+%   Adjusts the spiketimes to line up 
+%   with the stimulus repitions.  Only works 
+%   on the cell level.
+%example as = adjspikes('save','redo')
+% 
+%dependencies:  ispikes, stimInfo
+
+Args = struct('RedoLevels',0,'SaveLevels',0, ...
+    'Auto',0,'Group','',...
+    'InterBI',10,'IntraBI',5);
+
+[Args,varargin2] = getOptArgs(varargin,Args, ...
+    'flags',{'Auto'}, ...
+    'shortcuts',{'redo',{'RedoLevels',1};'save',{'SaveLevels',1}}, ...
+    'subtract',{'RedoLevels','SaveLevels'});
+
+Args.classname = 'adjspikes';
+Args.matname = [Args.classname '.mat'];
+Args.matvarname = 'as';
+
+if nargin==0
+    % create empty object
+    obj = createEmptyObject(Args);
+elseif( (nargin==1) & (isa(varargin{1},'adjspikes'))  )
+    obj = varargin{1};
+elseif Args.RedoLevels==0
+    % check for saved object
+    if isempty(Args.Group)
+        dirlist = nptDir('adjspikes.mat','CaseInsensitive');
+    end
+    if ~isempty(dirlist)
+        fprintf('Loading saved adjspikes object...\n');
+        % load saved object and exit
+        try
+            l = load(dirlist(1).name);
+            obj = l.as;
+        catch
+            fprintf('older format... Recalculating...')
+            obj = createObject(group,Args,varargin2{:});
+        end
+    else
+        % no saved object so try to create one
+        obj = createObject(Args,varargin2{:});
+    end
+elseif Args.RedoLevels
+    obj = createObject(Args,varargin2{:});
+end
+
+function obj = createEmptyObject(Args)
+data.numSets = 0;
+data.setNames = '';
+data.adjSpiketrain = [];
+data.adjFramePoints = [];
+data.raster = [];
+data.rasterIndex = [];
+n = nptdata(0,0);
+d.data = data;
+obj = class(d,Args.classname,n);
+
+function obj = createObject(Args,varargin)
+%get ispikes
+sp = ispikes('auto');
+if isempty(sp)
+    obj=createEmptyObject;
+    return
+end
+
+% get current directory
+pwDir = pwd;
+%get stiminfo
+stimInfo = stiminfo('auto',varargin{:});
+data.numSets = 1;
+data.setNames{1} = pwDir;
+
+%%%%% Input of framesvector is now in time %%%%%%%
+[data.adjSpiketrain,data.adjFramePoints,data.TossedSpikes] = AdjustFramesVector(sp,(stimInfo.data.framePoints-1)/(stimInfo.data.catInfo.samplingrate/1000),stimInfo.data.catInfo.frame_duration,stimInfo);
+% call CreateRaster to create rasters and then take transpose so that each repetition is a
+% column
+% get repetitions 
+[raster,new_frame_vector] = CreateRaster(data.adjFramePoints,data.adjSpiketrain,stimInfo);
+[BurstRaster] = BurstActivityFinder(raster,Args);
+if ~isempty(new_frame_vector)
+    data.adjFramePoints = new_frame_vector;
+end
+data.raster = raster';
+data.BurstRaster = BurstRaster';
+numReps = size(raster,1);
+data.rasterIndex = [0; numReps];
+d.data = data;
+
+number = 1;
+holdaxis = get(sp,'HoldAxis');
+nd = nptdata(number,holdaxis,pwDir);
+obj = class(d,'adjspikes',nd);
+if(Args.SaveLevels>0)
+    fprintf('Saving adjspikes object...\n');
+    filename = 'adjspikes.mat';
+    as = obj;
+    save(filename,'as')
+end

@@ -1,0 +1,3289 @@
+? BuracasA2B1P033.txt
+? BuracasA3B2P033.txt
+? CatCmds.m
+? catCompute
+? catCompute.c
+? catCompute.h
+? catCompute_main.c
+? cvs010505.txt
+? diffs010505.txt
+? getSurrogateSpikes.c
+? getSurrogateSpikes.h
+? getSurrogateSpikes_main.c
+? noise3.m
+? OneOverFBeta1.txt
+? phaserandf
+? PlotNewGrating.m
+? reversalsA2B1P033.txt
+? reversalsA3B2P033.txt
+? showFFT.m
+? @adjspikesxcorr/adjspikesxcorrcopy.m
+? @firingrate/private/FitFR.m
+U calcfiringraterepetitions.m
+U fitfr.m
+U fitsurrogatefr.m
+U @adjspikes/adjspikes.m
+U @adjspikes/plot.m
+U @adjspikespsth/adjspikespsth.m
+U @adjspikespsth/plot.m
+U @adjspikespsth/plus.m
+U @adjspikespsth/private/adjPSTH.m
+U @events/events.m
+U @events/plot.m
+U @events/plus.m
+U @events/private/EventsAnalysis.m
+U @events/private/EventsDurations.m
+U @events/private/EventsLimits.m
+U @events/private/EventsLimitsConfirm.m
+U @events/private/EventsRandomISI.m
+U @events/private/EventsRandomThresholds.m
+U @events/private/EventsSpikes.m
+U @events/private/EventsStartingPoints.m
+RCS file: /ccb/src/graycvs/Cat/@firingrate/firingrate.m,v
+retrieving revision 1.6
+retrieving revision 1.8
+Merging differences between 1.6 and 1.8 into firingrate.m
+C @firingrate/firingrate.m
+RCS file: /ccb/src/graycvs/Cat/@firingrate/plot.m,v
+retrieving revision 1.4
+retrieving revision 1.9
+Merging differences between 1.4 and 1.9 into plot.m
+C @firingrate/plot.m
+M @firingrate/plus.m
+M @firingrate/subsref.m
+RCS file: /ccb/src/graycvs/Cat/@firingrate/private/CalcFiringRate.m,v
+retrieving revision 1.3
+retrieving revision 1.5
+Merging differences between 1.3 and 1.5 into CalcFiringRate.m
+C @firingrate/private/CalcFiringRate.m
+U @events/private/EventsWiden.m
+U @jointevents/jointevents.m
+U @jointevents/plot.m
+U @jointevents/plus.m
+U @jointevents/private/JointEventsAnalysis.m
+U @responsiveness/plot.m
+U @responsiveness/private/CalcResponsiveness.m
+U @sparsity/heterogeneity.m
+U @sparsity/plot.m
+U @sparsity/sparsity.m
+? BuracasA2B1P033.txt
+? BuracasA3B2P033.txt
+? CatCmds.m
+? catCompute
+? catCompute.c
+? catCompute.h
+? catCompute_main.c
+? diffs010505.txt
+? getSurrogateSpikes.c
+? getSurrogateSpikes.h
+? getSurrogateSpikes_main.c
+? noise3.m
+? OneOverFBeta1.txt
+? phaserandf
+? PlotNewGrating.m
+? reversalsA2B1P033.txt
+? reversalsA3B2P033.txt
+? showFFT.m
+? @adjspikesxcorr/adjspikesxcorrcopy.m
+? @firingrate/private/FitFR.m
+Index: @adjspikes/adjspikes.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@adjspikes/adjspikes.m,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+78a79,83
+> if ~strcmp(stimInfo.data.iniInfo.type,'Movie')
+>     obj=createEmptyObject;
+>     return
+> end
+> 
+80c85
+< [data.adjSpiketrain,data.adjFramePoints] = AdjustFramesVector(sp,(stimInfo.data.framePoints)/(stimInfo.data.catInfo.samplingrate/1000),stimInfo.data.catInfo.frame_duration);
+---
+> [data.adjSpiketrain,data.adjFramePoints] = AdjustFramesVector(sp,(stimInfo.data.framePoints-1)/(stimInfo.data.catInfo.samplingrate/1000),stimInfo.data.catInfo.frame_duration);
+Index: @adjspikes/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@adjspikes/plot.m,v
+retrieving revision 1.6
+retrieving revision 1.3
+diff -r1.6 -r1.3
+1a2
+> 
+2a4
+> 
+3a6
+> 
+4a8
+> 
+7,9d10
+< Args = struct('showTitle',1,'chunkSize',[],'showChunk',0, ...
+<     'Color','b','stimInfoDir',['..' filesep '..' ],...
+<     'linkedZoom',1,'FMarkersOff',0,'RefreshMarkers',0,'Stacked',0);
+11,12d11
+< Args.flags = {'showTitle','showChunk','linkedZoom',...
+<     'FMarkersOff','RefreshMarkers','Stacked'};
+14c13,16
+< Args = getOptArgs(varargin,Args,'Color','chunkSize','numBins');
+---
+> Args = struct('showTitle',1,'chunkSize',[],'showChunk',0, ...
+>     'Color','b','stimInfoDir',['..' filesep '..' ],'linkedZoom',1,'FMarkersOff',0);
+> Args = getOptArgs(varargin,Args,'flags',{'showTitle','showChunk','linkedZoom','FMarkersOff'});
+> varargout{1} = {'Args',Args,'handle',gca};
+37c39
+< stimInfo = stiminfo('auto');
+---
+> stimInfo = stiminfo('auto',1,'save');
+38a41,42
+> 
+> 
+40c44
+<     n*chunkSize]*1000;
+---
+>        n*chunkSize]*1000;
+45,55c49,58
+< if Args.Stacked
+<     colors = 'brcgkmbrcgkmbrcgkm';
+<     ii = transpose([1:size(obj.data.raster',1)])*ones(1,size(obj.data.raster',2));
+<     plot(obj.data.raster',ii,'LineStyle','none','Marker','.','Color',Args.Color);
+<     group_num=dirnames{1}(37);
+<     for i = 1:obj.data.numSets
+<         hold on
+<         if dirnames{i}(37) ~= group_num
+<             line([0 stimInfo.data.catInfo.frame_duration*stimInfo.data.catInfo.num_frames],[obj.data.rasterIndex(i+1)+.5 obj.data.rasterIndex(i+1)+.5],'Color','r','LineWidth',2)
+<         else
+<             line([0 stimInfo.data.catInfo.frame_duration*stimInfo.data.catInfo.num_frames],[obj.data.rasterIndex(i+1)+.5 obj.data.rasterIndex(i+1)+.5],'Color','k','LineWidth',2)
+---
+> %Create Raster
+> num_repetitions = stimInfo.data.catInfo.num_repetitions;
+> num_frames = stimInfo.data.catInfo.num_frames;
+> raster = CreateRaster(obj.data.adjFramePoints(n,:),obj.data.adjSpiketrain(n,:),num_repetitions,num_frames);
+> 
+> %Entire Raster (SLOW)    
+> if Args.showChunk==0   %if n==1 & Args.showChunk==0
+>         if ~isempty(raster.spikes)
+>             ii = transpose([1:size(raster.spikes,1)])*ones(1,size(raster.spikes,2));
+>             plot(raster.spikes,ii,'LineStyle','none','Marker','.','Color',Args.Color);
+57,58c60,62
+<         group_num = dirnames{i}(37);
+<     end
+---
+>     %axis ij
+>     ylim([-1 num_repetitions+2])
+>     ylabel('Repetitions')
+60c64,65
+<         FrameMarkers = 0:stimInfo.data.catInfo.frame_duration:stimInfo.data.catInfo.frame_duration*stimInfo.data.catInfo.num_frames;
+---
+>         FrameMarkers = 0:stimInfo.data.catInfo.frame_duration:stimInfo.data.catInfo.frame_duration*num_frames;
+>         hold on
+62,117d66
+<         plot(FrameMarkers,obj.data.rasterIndex(end)+1,'vk','LineWidth',2)
+<     end
+<     ylim([0 obj.data.rasterIndex(end)+1])
+< else
+<     %Create Raster
+<     num_repetitions = stimInfo.data.catInfo.num_repetitions;
+<     num_frames = stimInfo.data.catInfo.num_frames;
+<     frame_duration = stimInfo.data.catInfo.frame_duration;
+<     raster = (obj.data.raster(:,obj.data.rasterIndex(n)+1:obj.data.rasterIndex(n)+num_repetitions))';
+<     %Entire Raster (SLOW)
+<     if Args.showChunk==0   %if n==1 & Args.showChunk==0  
+<         if size(obj.data.raster,2) > num_repetitions
+<             hold off %% this is for the displaydata gui
+<         end
+<         if Args.RefreshMarkers
+<             refreshMarks = 0:stimInfo.data.catInfo.sync_duration:frame_duration*num_frames;
+<             for i = 1:length(refreshMarks)
+<                 plot([refreshMarks(i) refreshMarks(i)],[0 num_repetitions+1],'--r','LineWidth',.5)
+<                 hold on
+<             end            
+<         end
+<         if ~isempty(raster)
+<             ii = transpose([1:size(raster,1)])*ones(1,size(raster,2));
+<             plot(raster,ii,'LineStyle','none','Marker','.','Color',Args.Color);
+<             set(gca,'YDir','reverse')
+<         end
+<         %axis ij
+<         ylim([-1 num_repetitions+2])
+<         ylabel('Repetitions')
+<         if ~Args.FMarkersOff
+<             hold on
+<             FrameMarkers = 0:frame_duration:frame_duration*num_frames;
+<             plot(FrameMarkers,0,'vk','LineWidth',2)
+<             plot(FrameMarkers,num_repetitions+1,'^k','LineWidth',2)
+<         end
+<         xlim([0 frame_duration*num_frames+1])
+<         % instantiate responsiveness object
+<         resp = responsiveness('auto');
+<         title([pwd ' R = ' num2str(resp.data.responsiveness)])
+<         hold off        
+<     elseif Args.showChunk %Raster Chunk
+<         if ~isempty(raster.spikes)
+<             if x(2)>x(1)
+<                 ind = find((raster>x(1)) & (raster<x(2)));
+<                 [ii,jj] = ind2sub(size(raster),ind);
+<                 plot(raster(ind),ii,'LineStyle','none','Marker','.','Color',Args.Color);
+<             else
+<                 ind = find((raster>x(1)) & (raster<rd));
+<                 [ii,jj] = ind2sub(size(raster),ind);
+<                 plot(raster(ind),ii,'LineStyle','none','Marker','.','Color',Args.Color);
+< 
+<                 ind = find((raster.spikes>0) & (raster.spikes<x(2)));
+<                 [ii,jj] = ind2sub(size(raster),ind);
+<                 plot(raster(ind)+rd,ii,'LineStyle','none','Marker','.','Color',Args.Color);
+<             end
+<         end
+118a68,78
+>         plot(FrameMarkers,num_repetitions+1,'vk','LineWidth',2)
+>     end
+>     xlim([0 stimInfo.data.catInfo.frame_duration*num_frames+1])
+>     hold off
+>     % instantiate responsiveness object
+>     resp = responsiveness('auto');
+>     title([dirLevel(pwd,'ShortName') ' R = ' num2str(resp.data.responsiveness)])
+> 
+>     %Raster Chunk  
+> elseif Args.showChunk
+>     if ~isempty(raster.spikes)
+120,121c80,82
+<             axis([x(1) x(2) 0 num_repetitions+1]);
+<             patch([x(1) x(1) x(2) x(2)],[y(1)+.5  y(1)+1.5  y(1)+1.5  y(1)+.5],'b', 'FaceAlpha', .01);
+---
+>             ind = find((raster.spikes>x(1)) & (raster.spikes<x(2)));
+>             [ii,jj] = ind2sub(size(raster.spikes),ind);
+>             plot(raster.spikes(ind),ii,'LineStyle','none','Marker','.','Color',Args.Color);
+123,125c84,90
+<             axis([x(1) rd+x(2) 0 num_repetitions+1]);
+<             patch([x(1) x(1) rd rd],[y(1)+.5  y(1)+1.5  y(1)+1.5  y(1)+.5],'b', 'FaceAlpha', .01);
+<             patch([x(2)+rd x(2)+rd rd rd],[y(2)+.5  y(2)+1.5  y(2)+1.5  y(2)+.5],'b', 'FaceAlpha', .01);
+---
+>             ind = find((raster.spikes>x(1)) & (raster.spikes<rd));
+>             [ii,jj] = ind2sub(size(raster.spikes),ind);
+>             plot(raster.spikes(ind),ii,'LineStyle','none','Marker','.','Color',Args.Color);
+>             
+>             ind = find((raster.spikes>0) & (raster.spikes<x(2)));
+>             [ii,jj] = ind2sub(size(raster.spikes),ind);
+>             plot(raster.spikes(ind)+rd,ii,'LineStyle','none','Marker','.','Color',Args.Color);
+127,130d91
+<         hold off
+<         % axis ij
+<         ylabel('Repetitions')
+<         % xlabel('Time (msec)')
+132,133c93,107
+<     %hold off
+< end
+\ No newline at end of file
+---
+>     hold on
+>     if x(2)>x(1)
+>         axis([x(1) x(2) 0 num_repetitions+1]);
+>         patch([x(1) x(1) x(2) x(2)],[y(1)+.5  y(1)+1.5  y(1)+1.5  y(1)+.5],'b', 'FaceAlpha', .01);
+>     else
+>         axis([x(1) rd+x(2) 0 num_repetitions+1]);
+>         patch([x(1) x(1) rd rd],[y(1)+.5  y(1)+1.5  y(1)+1.5  y(1)+.5],'b', 'FaceAlpha', .01);
+>         patch([x(2)+rd x(2)+rd rd rd],[y(2)+.5  y(2)+1.5  y(2)+1.5  y(2)+.5],'b', 'FaceAlpha', .01);
+>     end
+>     hold off
+>     % axis ij
+>     ylabel('Repetitions')
+>     % xlabel('Time (msec)')
+> end
+> %hold off
+\ No newline at end of file
+Index: @adjspikespsth/adjspikespsth.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@adjspikespsth/adjspikespsth.m,v
+retrieving revision 1.6
+retrieving revision 1.4
+diff -r1.6 -r1.4
+14c14
+<     'Auto',0,'stimInfoDir',['..' filesep '..' ],'binsize','frame','overlap',1);
+---
+>     'Auto',0,'stimInfoDir',['..' filesep '..' ],'binsize','frame','overlap','none');
+21,24d20
+< Args.classname = 'adjspikespsth';
+< Args.matname = [Args.classname '.mat'];
+< Args.matvarname = 'ap';
+< 
+27,28c23,24
+<     obj = createEmptyObject(Args);
+< elseif( (nargin==1) & (isa(varargin{1},'adjspikespsth'))  )
+---
+>     obj = createEmptyObject;
+> elseif( (nargin==1) & (isa(varargin{1},'adjspikes'))  )
+41c37
+<             obj = l.ap;
+---
+>             obj = l.as;
+54,61c50,65
+< function obj = createEmptyObject(Args)
+< data.numSets = 0;
+< data.setNames = '';
+< data.dlist = [];
+< data.setIndex = [];
+< n = nptdata(0,0);
+< d.data = data;
+< obj = class(d,Args.classname,n);
+---
+> 
+> 
+> 
+> function obj = createEmptyObject
+> nd = nptdata;
+> % d.data.sessionnname = '';
+> % d.data.groupname = '';
+> % d.data.cellname = '';
+> d.data.adjSpiketrain.cluster.spikes = [];
+> d.data.adjFramePoints = [];
+> d.data.patch=[];
+> obj = class(d,'adjspikespsth',nd);
+> 
+> 
+> 
+> 
+69a74
+> 
+74c79
+< stimInfo = stiminfo('auto');
+---
+> stimInfo = stiminfo('auto',1,'save');
+76,78d80
+< data.numSets = 1;
+< data.setNames{1} = pwd;
+< data.dlist = nptDir;
+80c82,88
+< [data.psth,data.plotVector] = adjPSTH(sp,stimInfo,Args.binsize,Args.overlap);
+---
+> 
+> 
+> 
+> % data.sessionname = sp.data.sessionname;
+> % data.groupname = sp.data.groupname;
+> % data.cellname = sp.data.cellname;
+> [data.psth , data.plotVector] = adjPSTH(sp,stimInfo,Args.binsize,Args.overlap);
+85a94
+> 
+88a98
+>     %filename = [obj.data.sessionname 'g' obj.data.groupname '_adjspikes.mat'];
+90,91c100,101
+<     ap = obj;
+<     save(filename,'ap')
+---
+>     as = obj;
+>     save(filename,'as')
+Index: @adjspikespsth/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@adjspikespsth/plot.m,v
+retrieving revision 1.4
+retrieving revision 1.1
+diff -r1.4 -r1.1
+8,10c8
+<     'Color','b','xlabel',0,'stimInfoDir',['..' filesep '..' ],...
+<     'linkedZoom',1,'plotType','line');
+< 
+---
+>     'Color','b','xlabel',0,'stimInfoDir',['..' filesep '..' ],'linkedZoom',1,'plotType','line');
+11a10
+> varargout{1} = {'Args',Args};
+18,21c17,22
+< cwd = pwd;
+< eval(['cd ' Args.stimInfoDir]);
+< stimInfo = stiminfo('auto');
+< eval(['cd ' pwd]);
+---
+> 
+> pdir = pwd;
+> cd(Args.stimInfoDir)
+> stimInfo = stiminfo('auto',1,'save');
+> cd(pdir)
+> 
+28a30
+> 
+35,36c37,39
+< %Plot the PSTH
+< hold on
+---
+> 
+> 
+> %PSTH
+38c41
+<     stairs(obj.data.plotVector(n,:),obj.data.psth(n,:),Args.Color);
+---
+>     h = stairs(obj.data.plotVector,obj.data.psth);
+40c43
+<     plot(obj.data.plotVector(n,:),obj.data.psth(n,:),'Color',Args.Color);
+---
+>     h = plot(obj.data.plotVector,obj.data.psth);
+41a45,46
+>     
+> set(h,'Color',Args.Color)
+47d51
+< 
+Index: @adjspikespsth/private/adjPSTH.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@adjspikespsth/private/adjPSTH.m,v
+retrieving revision 1.2
+retrieving revision 1.1
+diff -r1.2 -r1.1
+2,4c2,4
+< % adjPSTH(obj,stimInfo,binsize,slide_duration)
+< % input obj is the adjspikes and stiminfo objects to create and then
+< % calculate using the slidinghist program the post stimulus time histogram (PSTH) 
+---
+> % PlotPSTH(binsize,slide_duration)
+> % will load the adjspikes and stiminfo objects to create and then display
+> % the post stimulus time histogram (PSTH) 
+6a7
+> num_frames = stimInfo.data.catInfo.num_frames;
+12a14
+> 
+17c19,20
+< [y,t] = slidingHist(obj.data.raster',slide,width,repetition_duration);
+---
+> raster = CreateRaster(obj.data.adjFramePoints,obj.data.adjSpiketrain,num_repetitions,num_frames);
+> [y,t] = slidingHist(raster.spikes,slide,width,repetition_duration);
+20c23
+< y=(y/num_repetitions)/(width/1000);
+\ No newline at end of file
+---
+> y=(y/num_repetitions)/(width/1000);
+Index: @events/events.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/events.m,v
+retrieving revision 1.11
+retrieving revision 1.7
+diff -r1.11 -r1.7
+4c4,5
+< %   %   
+---
+> %   
+> %   
+10,13c11
+<     'Auto',0,'stimInfoDir',['..' filesep '..' ],....
+<     'Binsize',10,'ThresholdType','randomize', ...
+<     'SlideDuration',1,'PercentageReps',33, ...
+<     'Upper',95,'Lower','mean');
+---
+>     'Auto',0,'stimInfoDir',['..' filesep '..' ],'Binsize',5,'ThresholdType',95);
+49a48
+> 
+58a58
+> 
+65a66
+> 
+75,76c76,77
+< %%%% Calculate the events analysis %%%%
+< data.events = EventsAnalysis(sp,stimInfo,Args);
+---
+> 
+> data.events = EventsAnalysis(sp,stimInfo,Args.Binsize,Args.ThresholdType);
+77a79
+> 
+80a83
+> 
+Index: @events/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/plot.m,v
+retrieving revision 1.26
+retrieving revision 1.21
+diff -r1.26 -r1.21
+6,8c6,11
+<     'Color','b','xlabel',0,'stimInfoDir',['..' filesep '..' ],'linkedZoom',1,'showRaster',0, ...
+<     'showPSTH',0,'showEvents',0,'showThreshold',0,'showDurations',0,'showProbability',0,'numBins',25, ...
+<     'XMax',1000);
+---
+>     'Color','b','xlabel',0,'stimInfoDir',['..' filesep '..' ],'linkedZoom',1, ...
+>     'showPsth',0,'showEvents',0,'showThreshold',0,'showDurations',0,'showProbability',0,'numBins',25, ...
+>     'loglog',0,'semilogy',0,'NormalizeXaxis',0,'NormalizeYaxis',0);
+> Args = getOptArgs(varargin,Args,'flags',{'showTitle','showChunk','xlabel','linkedZoom', ...
+>         'showPsth','showEvents','showThreshold','showDurations','showProbability'});
+> varargout{1} = {'Args',Args};
+10,11d12
+< Args = getOptArgs(varargin,Args,'flags',{'showTitle','showChunk','xlabel','linkedZoom',...
+<     'showRaster','showPSTH','showEvents','showThreshold','showDurations','showProbability'});    
+14c15
+<     n=1:get(obj,'Number');
+---
+>     n=1;
+21a23
+> 
+23,27d24
+<     eval(['cd ' obj.data.setNames{n}])
+<     if Args.showRaster
+<         as = adjspikes('auto');
+<         raster = as.data.raster';
+<     end
+33a31
+>     
+37c35
+<     stimInfo = stiminfo('auto');
+---
+>     stimInfo = stiminfo('auto',1,'save');
+39c37
+< 
+---
+>     
+41c39
+<         n*chunkSize]*1000;
+---
+>             n*chunkSize]*1000;
+48,49c46
+< if Args.showPSTH
+<     hold on
+---
+> if Args.showPsth
+51,52c48,49
+<     index = max(obj.data.events.PSTHBins(:,n));
+<     plot(obj.data.events.PSTHBins(1:index,n),obj.data.events.PSTH(1:index,n),'Color',Args.Color);
+---
+>     h = plot(obj.data.events.PSTHVector,obj.data.events.DataPSTH);
+>     set(h,'Color',Args.Color)
+56a54
+>     hold on
+58,60c56,61
+<     %ylim([0 max(obj.data.events.PSTH(:,n))]);
+<     if Args.showTitle
+<         title(obj.data.setNames{n})
+---
+>     
+>     if(Args.GroupPlots>1)
+>         set(gca,'YTick',[]);
+>         if(Args.GroupPlotIndex>1)
+>             set(gca,'XTick',[]);
+>         end
+62d62
+<     hold off
+69,72c69,70
+<     %index = max(obj.data.events.PSTH(:,n));
+<     index = 1;
+<     for r = 1:length(obj.data.events.StartEvent(:,n))
+<         line([obj.data.events.StartEvent(r,n) obj.data.events.EndEvent(r,n)],[index index],'Color',Args.Color,'LineWidth',3)
+---
+>     for r = 1:length(obj.data.events.StartEvent)
+>         line([obj.data.events.StartEvent(r) obj.data.events.EndEvent(r)],[max(obj.data.events.DataPSTH) max(obj.data.events.DataPSTH)],'Color',Args.Color,'LineWidth',5)
+75c73
+<     %ylim([0 index+3])
+---
+>     
+77,78c75,77
+<     set(gca,'XTick',[]);
+<     hold off
+---
+>     if(Args.GroupPlotIndex>1)
+>         set(gca,'XTick',[]);
+>     end
+84c83
+<     hold on
+---
+>     %% Thresholds %%
+86c85
+<     line([0 rd],[obj.data.events.Thresholds(n).meanupperthreshold obj.data.events.Thresholds(n).meanupperthreshold],'Color',Args.Color,'LineStyle','-','LineWidth',2)
+---
+>     line([0 rd],[obj.data.events.Thresholds.meanupperthreshold obj.data.events.Thresholds.meanupperthreshold],'Color',Args.Color,'LineStyle','--','LineWidth',2)
+88c87
+<     line([0 rd],[obj.data.events.Thresholds(n).meanlowerthreshold obj.data.events.Thresholds(n).meanlowerthreshold],'Color',Args.Color,'LineStyle','--','LineWidth',2)
+---
+>     line([0 rd],[obj.data.events.Thresholds.meanlowerthreshold obj.data.events.Thresholds.meanlowerthreshold],'Color',Args.Color,'LineStyle','--','LineWidth',2)
+90,101d88
+<     hold off
+< end
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< 
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< if Args.showRaster
+<     NumReps = size(raster,1);
+<     r = transpose([1:size(raster(1:NumReps,:),1)])*ones(1,size(raster,2));
+<     hold on
+<     plot(raster,r+max(obj.data.events.PSTH(:,n))+3,'LineStyle','none','Marker','.','Color',Args.Color);
+<     ylim([0 max(obj.data.events.PSTH(:,n))+NumReps])
+<     hold off
+105c92
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---
+> %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+107c94,98
+<     %%%% Reshape the EventDurations into a single vector
+---
+>     if Args.NormalizeXaxis
+>         m = max(obj.data.events.EventDurations,[],2);
+>         m = repmat(m,1,size(obj.data.events.EventDurations,2));
+>         obj.data.events.EventDurations = obj.data.events.EventDurations./m;
+>     end
+111,116c102,141
+<     bar(binedges,n,1,Args.Color);
+<     set(gca,'FontSize',16)
+<     ylabel('Number of Occurences')
+<     axis([0-(max(obj.data.events.EventDurations)/Args.numBins)/2 Args.XMax 0 max(n)])
+<     xlabel('Event Duration (msec)')
+<     string = ['EVENT DURATIONS -- ' num2str(get(obj,'Number')) ' Cells  Mean: ' num2str(nanmean(obj.data.events.EventDurations(:))) '  Median: ' num2str(nanmedian(obj.data.events.EventDurations(:)))];
+---
+>     
+>     if Args.NormalizeYaxis
+>         n = n/sum(n);
+>     end
+>     
+>     hb = bar(binedges,n,'histc');
+>     
+>     if Args.loglog | Args.semilogy
+>         vert = get(hb,'vertices');
+>         % find values that are zero
+>         zi = find(vert(:,2)==0);
+>         vert(zi,2) = .1;
+>         set(hb,'vertices',vert);
+>         set(gca,'YScale','log')
+>     end
+>     if Args.loglog
+>         set(gca,'XScale','log')
+>     end
+>     
+>     
+>     if Args.NormalizeYaxis
+>         ylabel('Probability')
+>         axis([0-(max(obj.data.events.EventDurations)/Args.numBins)/2 max(obj.data.events.EventDurations) 0 1])
+>     else
+>         ylabel('Number of Occurences')  
+>         axis([0-(max(obj.data.events.EventDurations)/Args.numBins)/2 max(obj.data.events.EventDurations) 0 max(n)])
+>     end
+>     
+>     if Args.NormalizeXaxis
+>         xlabel('Normalized Event Duration')
+>     else
+>         xlabel('Event Duration (msec)')
+>     end
+>     
+>     if size(obj.data.sessionname,2)==1
+>         string = ['session ' char(obj.data.sessionname{:})  '  group ' char(obj.data.groupname{:}) '  cell ' char(obj.data.cellname{:}) ' / Mean: ' num2str(nanmean(obj.data.events.EventDurations(:))) '  Median: ' num2str(nanmedian(obj.data.events.EventDurations(:)))];
+>     else
+>         string = ['EVENT DURATION -- ' num2str(size(obj.data.cellname,2)) ' Cells / Mean: ' num2str(nanmean(obj.data.events.EventDurations(:))) '  Median: ' num2str(nanmedian(obj.data.events.EventDurations(:)))];
+>     end  
+>     
+125,132c150,194
+<     binedges = 0:1/Args.numBins:1;
+<     n = histcie(obj.data.events.EventProbability,binedges);
+<     bar(binedges,n,1,Args.Color);
+<     set(gca,'FontSize',16)
+<     ylabel('Number of Cells')
+<     axis([0-(1/Args.numBins)/2 1 0 max(n)])
+<     xlabel('Probability')
+<     string = ['EVENT PROBABILITIES -- ' num2str(get(obj,'Number')) ' Cells  Mean: ' num2str(nanmean(obj.data.events.EventProbability(:))) ' Median: ' num2str(nanmedian(obj.data.events.EventProbability(:)))]
+---
+>     
+>     if length(obj.data.events.EventProbability==1)
+>         plot(obj.data.events.EventProbability,'r*')
+>     else
+>         % obj.data.events.EventProbability = reshape(obj.data.events.EventProbability,1,prod(size(obj.data.events.EventProbability)));
+>         binedges = 0:max(obj.data.events.EventProbability)/Args.numBins:max(obj.data.events.EventProbability)-max(obj.data.events.EventProbability)/Args.numBins;
+>         n = histcie(obj.data.events.EventProbability,binedges);
+> 
+> 
+>         if Args.NormalizeYaxis
+>             n = n/sum(n);
+>         end
+> 
+>         if sum(n)>0
+>             hb = bar(binedges,n,'histc');
+> 
+>             if Args.loglog | Args.semilogy
+>                 vert = get(hb,'vertices');
+>                 % find values that are zero
+>                 zi = find(vert(:,2)==0);
+>                 vert(zi,2) = .1;
+>                 set(hb,'vertices',vert);
+>                 set(gca,'YScale','log')
+>             end
+>             if Args.loglog
+>                 set(gca,'XScale','log')
+>             end
+> 
+>             if Args.NormalizeYaxis
+>                 ylabel('Probability')
+>                 axis([0-(max(obj.data.events.EventProbability)/Args.numBins)/2 max(obj.data.events.EventProbability) 0 1])
+>             else
+>                 ylabel('Number of Occurences')
+>                 axis([0-(max(obj.data.events.EventProbability)/Args.numBins)/2 max(obj.data.events.EventProbability) 0 max(n)])
+>             end
+>         end
+>     end
+>     xlabel('Event Probability')
+> 
+>     if size(obj.data.sessionname,2)==1
+>         string = ['session ' char(obj.data.sessionname{:})  '  group ' char(obj.data.groupname{:}) '  cell ' char(obj.data.cellname{:}) ' Mean: ' num2str(nanmean(obj.data.events.EventProbability(:))) ' Median: ' num2str(nanmedian(obj.data.events.EventProbability(:)))]
+>     else
+>         string = ['EVENT PROBABILITY -- ' num2str(size(obj.data.cellname,2)) ' Cells'  '  Mean: ' num2str(nanmean(obj.data.events.EventProbability(:))) ' Median: ' num2str(nanmedian(obj.data.events.EventProbability(:)))]
+>     end
+> 
+Index: @events/plus.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/plus.m,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+2c2
+< %@events/plus Overloaded plus function for EVENTS objects.
+---
+> %@firingrate/plus Overloaded plus function for EVENTS objects.
+4a5
+> 
+34c35
+<         % both p and q are the right kind of objects so add them
+---
+>         % both p and q are the right kind of objects so add them 
+42,56c43,54
+<         r.data.events.PSTH = concatenate(r.data.events.PSTH,q.data.events.PSTH,'Columnwise');
+<         r.data.events.PSTHBins = concatenate(r.data.events.PSTHBins,q.data.events.PSTHBins,'Columnwise');
+<         r.data.events.StartEvent = concatenate(r.data.events.StartEvent,q.data.events.StartEvent,'Columnwise');
+<         r.data.events.EndEvent = concatenate(r.data.events.EndEvent,q.data.events.EndEvent,'Columnwise');
+<         r.data.events.EventProbability = concatenate(r.data.events.EventProbability,q.data.events.EventProbability,'Columnwise');
+<         r.data.events.EventDurations = concatenate(r.data.events.EventDurations,q.data.events.EventDurations,'Columnwise');
+<         r.data.events.Thresholds = concatenate(r.data.events.Thresholds,q.data.events.Thresholds,'Columnwise');
+<         r.data.events.EventMeanSpikeCounts = concatenate(r.data.events.EventMeanSpikeCounts,q.data.events.EventMeanSpikeCounts,'Columnwise');
+<         r.data.events.EventFanoFactor = concatenate(r.data.events.EventFanoFactor,q.data.events.EventFanoFactor,'Columnwise');
+<         r.data.events.EventMeanSpikeTimes = concatenate(r.data.events.EventMeanSpikeTimes,q.data.events.EventMeanSpikeTimes,'Columnwise');
+<         r.data.events.MaxPSTHValue = concatenate(r.data.events.MaxPSTHValue,q.data.events.MaxPSTHValue,'Columnwise');
+<         r.data.events.MeanPSTHValue = concatenate(r.data.events.MeanPSTHValue,q.data.events.MeanPSTHValue,'Columnwise');
+<         r.data.events.EventStartingPoints = concatenate(r.data.events.EventStartingPoints,q.data.events.EventStartingPoints,'Columnwise');
+<         r.data.events.FrameDuration = concatenate(r.data.events.FrameDuration,q.data.events.FrameDuration,'Columnwise');
+<         r.nptdata = plus(r.nptdata,q.nptdata);
+---
+>         if ~isempty(q.data.events.EventDurations)
+>             r.data.events.DataPSTH = concatenate(r.data.events.DataPSTH , q.data.events.DataPSTH);
+>             r.data.events.PSTHVector = concatenate(r.data.events.PSTHVector , q.data.events.PSTHVector);
+>             r.data.events.StartEvent = concatenate(r.data.events.StartEvent , q.data.events.StartEvent);
+>             r.data.events.EndEvent = concatenate(r.data.events.EndEvent , q.data.events.EndEvent);
+>             r.data.events.EventStartingPoints = concatenate(r.data.events.EventStartingPoints , q.data.events.EventStartingPoints);
+>             r.data.events.EventIntervalDurations = concatenate(r.data.events.EventIntervalDurations , q.data.events.EventIntervalDurations);
+>             r.data.events.EventDurations = concatenate(r.data.events.EventDurations , q.data.events.EventDurations);
+>             r.data.events.MaxPSTHValue = concatenate(r.data.events.MaxPSTHValue , q.data.events.MaxPSTHValue);
+>             r.data.events.MeanPSTHValue = concatenate(r.data.events.MeanPSTHValue , q.data.events.MeanPSTHValue);
+>             r.nptdata = plus(r.nptdata,q.nptdata);
+>         end
+Index: @events/private/EventsAnalysis.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsAnalysis.m,v
+retrieving revision 1.9
+retrieving revision 1.6
+diff -r1.9 -r1.6
+1c1,2
+< function [events] = EventsAnalysis(obj,stimInfo,Args)
+---
+> function [events] = EventsAnalysis(obj,stimInfo,binsize,threshold_type,slide_duration)
+> 
+5,6c6,7
+< events.PSTH=[];
+< events.PSTHBins=[];
+---
+> events.DataPSTH=[];
+> events.PSTHVector=[];
+9,10d9
+< events.EventProbability=[];
+< events.EventDurations=[];
+14a14,15
+> events.EventProbability=[];
+> events.EventDurations=[];
+22a24,27
+> if nargin<5 %%% The Default slide Duration is 1 ms.
+>     events.SlideDuration = 1;
+> end
+> 
+26,28c31
+< events.PercentageReps = Args.PercentageReps;
+< events.SlideDuration = Args.SlideDuration;
+< events.FrameDuration = stimInfo.data.catInfo.frame_duration;
+---
+> PercentageReps = 50; events.PercentageReps = PercentageReps;
+30,37c33,35
+< events.NumFrames = stimInfo.data.catInfo.num_frames;
+< events.NumRepetitions = stimInfo.data.catInfo.num_repetitions;
+< events.ThresholdType = Args.ThresholdType;
+< events.Upper = Args.Upper;
+< events.Lower = Args.Lower;
+< 
+< if isnumeric(Args.Binsize)
+<     events.Binsize = Args.Binsize;
+---
+> events.FrameDuration = stimInfo.data.catInfo.frame_duration;
+> if isnumeric(binsize)
+>     events.Binsize = binsize;
+41d38
+< convraster = obj.data.raster';
+43a41,45
+> NumRepetitions = stimInfo.data.catInfo.num_repetitions;
+> NumFrames = stimInfo.data.catInfo.num_frames;
+> events.NumRepetitions = NumRepetitions;
+> events.ThresholdType = threshold_type;
+> 
+45c47
+< for r = 1:events.NumRepetitions
+---
+> for r = 1:NumRepetitions
+47c49
+<     Frames = FramePoints(r*events.NumFrames-events.NumFrames+1:(r*events.NumFrames)+1);
+---
+>     Frames = FramePoints(r*NumFrames-NumFrames+1:(r*NumFrames)+1);
+51c53
+<         raster{r} = RepSpikes-TimeAdjust;
+---
+>         rast{r} = RepSpikes-TimeAdjust;
+54c56
+<         raster{r} = RepSpikes-Frames(1);
+---
+>         rast{r} = RepSpikes-Frames(1);
+58a61,63
+> %%%% Creation of the new raster for the Sliding PSTH %%%%%
+> raster = CreateRaster(FramePoints,Spiketrain,NumRepetitions,NumFrames);
+> 
+60c65
+< [events] = EventsLimits(raster,events,convraster);
+---
+> [events] = EventsLimits(raster,events,rast);
+62,63c67
+<     % Check the event boundaries and make sure the valleys are below the
+<     % mean firing rate and the boundaries are wide enough.
+---
+>     % Check the event boundaries and make sure the valleys are below the mean firing rate
+64a69,71
+>     % Modify the event boundries to include all spikes to the edges of
+>     % the events back down to the lower threshold.
+>     [events] = EventsWiden(events);    
+70c77
+<         [events] = EventsSpikes(raster,events);
+---
+>         [events] = EventsSpikes(rast,events);
+80,96c87
+<             [events] = EventsStartingPoints(raster,events);
+<         else
+<             events.StartEvent=[];
+<             events.EndEvent=[];
+<             events.EventProbability=[];
+<             events.EventDurations=[];
+<             events.Thresholds=[];
+<             events.EventMeanSpikeCounts=[];
+<             events.EventFanoFactor=[];
+<             events.EventMeanSpikeTimes=[];
+<             events.MaxPSTHValue=[];
+<             events.MeanPSTHValue=[];
+<             events.EventStartingPoints=[];
+<             events.EventIntervalDurations=[];
+<             events.EventSubStim=[];
+<             events.EventSubStimIndex=[];
+<             events.SubStimReps=[];
+---
+>             [events] = EventsStartingPoints(rast,events);
+98,115c89,97
+<     else
+<         events.StartEvent=[];
+<         events.EndEvent=[];
+<         events.EventProbability=[];
+<         events.EventDurations=[];
+<         events.Thresholds=[];
+<         events.EventMeanSpikeCounts=[];
+<         events.EventFanoFactor=[];
+<         events.EventMeanSpikeTimes=[];
+<         events.MaxPSTHValue=[];
+<         events.MeanPSTHValue=[];
+<         events.EventStartingPoints=[];
+<         events.EventIntervalDurations=[];
+<         events.EventSubStim=[];
+<         events.EventSubStimIndex=[];
+<         events.SubStimReps=[];
+<     end
+< end 
+\ No newline at end of file
+---
+>     end 
+> end 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+Index: @events/private/EventsDurations.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsDurations.m,v
+retrieving revision 1.2
+retrieving revision 1.1
+diff -r1.2 -r1.1
+7c7
+< stimulus_duration = ceil(events.RepetitionDuration);
+---
+> stimulus_duration = length(events.DataPSTH); % This is at a 1ms resolution.
+13c13
+< events.EventDurations = event_durations';
+---
+> events.EventDurations = event_durations;
+Index: @events/private/EventsLimits.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsLimits.m,v
+retrieving revision 1.10
+retrieving revision 1.4
+diff -r1.10 -r1.4
+1c1,2
+< function [events] = EventsLimits(raster,events,convraster)
+---
+> function [events] = EventsLimits(raster,events,rast)
+> 
+5c6,7
+< [PSTH,PSTHBins] = slidingHist(convraster,events.SlideDuration,events.Binsize,events.RepetitionDuration);
+---
+> % [DataPSTH,PSTHVector] = EventsPSTH(raster,events.Binsize,events.RepetitionDuration);
+> [DataPSTH,PSTHVector] = slidingHist(raster.spikes,events.SlideDuration,events.Binsize,events.RepetitionDuration);
+7,8c9,11
+< events.PSTH = ((PSTH/events.NumRepetitions)/(events.Binsize/1000))';
+< events.PSTHBins = PSTHBins';
+---
+> DataPSTH = (DataPSTH/events.NumRepetitions)/(events.Binsize/1000);
+> events.DataPSTH = DataPSTH;
+> events.PSTHVector = PSTHVector;
+11c14
+< if strcmp(events.ThresholdType,'randomize')   
+---
+> if events.ThresholdType == 1    
+13,14c16,17
+<     [randomized_rasters] = EventsRandomISI(raster,events.RepetitionDuration,num_random_spiketrains);    
+<     [Thresholds] = EventsRandomThresholds(events,randomized_rasters);    
+---
+>     [randomized_rasters] = EventsRandomISI(rast , events.RepetitionDuration , num_random_spiketrains);    
+>     [Thresholds] = EventsRandomThresholds(randomized_rasters , events.Binsize , events.RepetitionDuration);    
+17,18c20,21
+<     Thresholds.NumRandomSpiketrains = num_random_spiketrains;
+<     Thresholds.ThresholdUsed = 'Mean Upper Threshold via Randomization';    
+---
+>     Thresholds.num_random_spiketrains = num_random_spiketrains;
+>     Thresholds.threshold_used = 'Mean Upper Threshold';    
+20,26c23,25
+<     Thresholds.meanupperthreshold = prctile(events.PSTH,events.Upper);  
+<     if isnumeric(events.Lower)
+<         Thresholds.meanlowerthreshold = prctile(events.PSTH,events.Lower);
+<     else
+<         Thresholds.meanlowerthreshold = mean(events.PSTH);
+<     end
+<     Thresholds.ThresholdUsed = 'Percentile Threshold';    
+---
+>     Thresholds.meanupperthreshold = prctile(events.DataPSTH,events.ThresholdType);  
+>     Thresholds.meanlowerthreshold = mean(events.DataPSTH);
+>     Thresholds.threshold_used = 'Percentile Threshold';    
+28,34c27
+<     lowerthreshold = Thresholds.meanlowerthreshold; 
+<     if Thresholds.meanupperthreshold<Thresholds.meanlowerthreshold
+<         upperthreshold = prctile(events.PSTH,99);
+<         lowerthreshold = Thresholds.meanlowerthreshold;
+<         Thresholds.meanupperthreshold = prctile(events.PSTH,99);
+<         fprintf('Upper Threshold is Lower than the Lower Threshold')
+<     end               
+---
+>     lowerthreshold = Thresholds.meanlowerthreshold;    
+38c31
+< limits = [events.PSTH' >= upperthreshold];
+---
+> limits = [DataPSTH > upperthreshold];
+40,41c33,34
+< start_event = (find(diff_limits == 1))-events.SlideDuration; % Gives me the start of an event. Shift by slide duration due to diff function
+< end_event = (find(diff_limits == -1))-events.SlideDuration; % Gives me the end of an event.
+---
+> start_event = find(diff_limits == 1); % Gives me the start of an event.
+> end_event = find(diff_limits == -1); % Gives me the end of an event.
+48c41,42
+<         end_event = [end_event events.PSTHBins(end)];
+---
+>         fprintf('Initial error in the last end event')
+>         end_event = [end_event length(DataPSTH)];
+53c47,48
+<     error('Error in Positive or Negative Event Limits in EventLimits Function')
+---
+>     fprintf('Error in Positive or Negative Event Limits in EventLimits Function', '/n')
+>     return
+56,57c51,52
+< events.StartEvent = start_event';
+< events.EndEvent = end_event';
+---
+> events.StartEvent = start_event;
+> events.EndEvent = end_event;
+Index: @events/private/EventsLimitsConfirm.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsLimitsConfirm.m,v
+retrieving revision 1.3
+retrieving revision 1.1
+diff -r1.3 -r1.1
+5,7c5,7
+< data_psth = events.PSTH';
+< start_event = events.StartEvent';
+< end_event = events.EndEvent';
+---
+> data_psth = events.DataPSTH;
+> start_event = events.StartEvent;
+> end_event = events.EndEvent;
+12c12
+<     for v = 1:length(start_event)-1       
+---
+>     for v = 1:length(start_event)-1        
+15,37c15,19
+<             end_event(v) = -1;
+<             start_event(v+1) = -1;
+<         end              
+<     end     
+< end %if
+< start_event(find(start_event<0)) = [];
+< end_event(find(end_event<0)) = [];
+< if length(start_event) ~= length(end_event)
+<     error('Error in Positive or Negative Event Limits in EventsLimitsConfirm Function')
+< end
+< 
+< %%%%%%%%%%% Now Widen the start and end points until the lower threshold is
+< %%%%%%%%%%% hit
+< % This function will widen the boundries and make the start and end event points at the
+< % lowerthreshold level.
+< for e = 1:length(start_event)
+<     if start_event(e) > 1
+<         valley = data_psth(start_event(e)-1); % look at preceding psth bin 
+<         neg_move = 0;
+<         while valley > thresholds.meanlowerthreshold
+<             neg_move = neg_move+1;
+<             if (start_event(e)-neg_move) == events.PSTHBins(1) %% Check to see if you hit the stimulus Beginning
+<                 valley = thresholds.meanlowerthreshold;
+---
+>             if v == 1
+>                 pos_ind(v) = 0;
+>                 pos_ind(v+1) = 1;
+>                 neg_ind(v) = 1;
+>                 neg_ind(v+1) = 0;
+39,54c21,31
+<                 valley = data_psth(start_event(e)-neg_move);
+<             end
+<             if data_psth(start_event(e)) <= thresholds.meanlowerthreshold
+<                 neg_move=0;
+<                 valley = thresholds.meanlowerthreshold;
+<             end
+<         end         
+<         start_event(e) = start_event(e)-(neg_move);    
+<     end    
+<     if end_event(e) < events.PSTHBins(end)
+<         valley = data_psth(end_event(e)+1); % look at next psth bin 
+<         pos_move = 0;
+<         while valley > thresholds.meanlowerthreshold
+<             pos_move = pos_move+1;
+<             if (end_event(e)+pos_move) == events.PSTHBins(end) %% Check to see if you hit the stimulus Beginning
+<                 valley = thresholds.meanlowerthreshold;
+---
+>                 pos_ind(v) = pos_ind(v)*0;
+>                 pos_ind(v+1) = 1;
+>                 neg_ind(v) = neg_ind(v)*1;
+>                 neg_ind(v+1) = 0;
+>             end            
+>         else
+>             if v == 1
+>                 pos_ind(v) = 1;
+>                 pos_ind(v+1) = 1;
+>                 neg_ind(v) = 1;
+>                 neg_ind(v+1) = 1;
+56,63c33,38
+<                 valley = data_psth(end_event(e)+pos_move);
+<             end
+<             if data_psth(end_event(e)) <= thresholds.meanlowerthreshold
+<                 pos_move=0;
+<                 valley = thresholds.meanlowerthreshold;
+<             end
+<         end 
+<         end_event(e) = end_event(e)+(pos_move); 
+---
+>                 pos_ind(v) = pos_ind(v)*1;
+>                 pos_ind(v+1) = 1;
+>                 neg_ind(v) = neg_ind(v)*1;
+>                 neg_ind(v+1) = 1;
+>             end            
+>         end              
+65,66c40,42
+< end       
+< 
+---
+>     end_event = end_event(find(pos_ind == 1));
+>     start_event = start_event(find(neg_ind == 1));       
+> end %if
+68c44,45
+<     error('Error in Positive or Negative Event Limits in EventsLimitsConfirm Function')
+---
+>     fprintf('Error in Positive or Negative Event Limits in EventsLimitsConfirm Function', '/n')
+>     return
+71,72c48,49
+< events.StartEvent = start_event'; %% Due to the fact of histogram and binning the data
+< events.EndEvent = (end_event-1)';
+---
+> events.StartEvent = start_event;
+> events.EndEvent = end_event;
+Index: @events/private/EventsRandomISI.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsRandomISI.m,v
+retrieving revision 1.2
+retrieving revision 1.1
+diff -r1.2 -r1.1
+47,54c47
+<     for i = 1:length(random_isi) 
+<         if i>1
+<             raster = concatenate(raster,random_isi{i});
+<         else
+<             raster = random_isi{i};
+<         end
+<     end
+<     randomized_rasters{r}.raster = raster;        
+---
+>     randomized_rasters(r).raster = random_isi;        
+Index: @events/private/EventsRandomThresholds.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsRandomThresholds.m,v
+retrieving revision 1.3
+retrieving revision 1.1
+diff -r1.3 -r1.1
+1c1,2
+< function [thresholds] = EventsRandomThresholds(events,randomized_rasters)
+---
+> function [thresholds] = EventsRandomThresholds(randomized_rasters,binsize,repetition_duration)
+> 
+5,9c6,11
+< for r = 1:length(randomized_rasters)   
+<     [data] = slidingHist(randomized_rasters{r}.raster,events.SlideDuration,events.Binsize,events.RepetitionDuration);    
+<     % Since the edges can contain many spikes due to short intervals I take out the edges.
+<     max_psth(r) = max(data(100:length(data)-100));
+<     mean_psth(r) = mean(data(100:length(data)-100));
+---
+> for r = 1:length(randomized_rasters)    
+>     [data_psth] = EventsPSTH(randomized_rasters(r).raster,binsize,repetition_duration);    
+>     % Since the edges can contain many spikes I take out the first and
+>     % laste 100 ms.
+>     max_psth(r) = max(data_psth(100:length(data_psth)-100));
+>     mean_psth(r) = mean(data_psth(100:length(data_psth)-100));        
+15c17
+< thresholds.maxlowerthreshold = max(mean_psth); 
+---
+> thresholds.maxlowerthreshold = max(mean_psth); 
+\ No newline at end of file
+Index: @events/private/EventsSpikes.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsSpikes.m,v
+retrieving revision 1.4
+retrieving revision 1.2
+diff -r1.4 -r1.2
+2a3
+> num_repetitions = events.NumRepetitions;
+4c5
+< perc_station = events.NumRepetitions*(events.PercentageReps/100); 
+---
+> perc_station = num_repetitions*(events.PercentageReps/100); 
+9c10
+<     for eve = 1:events.NumRepetitions                
+---
+>     for eve = 1:num_repetitions                
+39,40c40
+< %Remove events without the appropriate number of spikes for a given number
+< %of repetitions
+---
+> %Remove events without the appropriate number of spikes for a given number of repetitions, previously assigned a zero value.
+46,48d45
+< events.EventMeanSpikeCounts=events.EventMeanSpikeCounts';
+< events.EventFanoFactor=events.EventFanoFactor';
+< events.EventMeanSpikeTimes=events.EventMeanSpikeTimes';
+51c48
+<     ERROR('Error in Positive or Negative Event Limits in Eventfinder Program', '/n')
+---
+>     fprintf('Error in Positive or Negative Event Limits in Eventfinder Program', '/n')
+53a51
+> 
+Index: @events/private/EventsStartingPoints.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsStartingPoints.m,v
+retrieving revision 1.5
+retrieving revision 1.3
+diff -r1.5 -r1.3
+1a2
+> 
+5,6c6,7
+< slide_duration = events.SlideDuration;
+< nreps = events.NumRepetitions;
+---
+> slide_duration = (events.Binsize-1)/2;
+> nreps=length(raster);
+12c13
+<     psth_values = events.PSTH(psth_vector);
+---
+>     psth_values = events.DataPSTH(psth_vector);
+38,42d38
+< 
+< events.MaxPSTHValue=events.MaxPSTHValue';
+< events.MeanPSTHValue=events.MeanPSTHValue';
+< events.EventStartingPoints=events.EventStartingPoints';
+< 
+Index: @events/private/EventsWiden.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@events/private/EventsWiden.m,v
+retrieving revision 1.3
+retrieving revision 1.2
+diff -r1.3 -r1.2
+4,6c4,6
+< data_psth = events.PSTH';
+< start_event = events.StartEvent';
+< end_event = events.EndEvent';
+---
+> data_psth = events.DataPSTH;
+> start_event = events.StartEvent;
+> end_event = events.EndEvent;
+50,51c50,51
+< events.StartEvent = (start_event-1)'; %% Due to the fact of histogram and binning the data
+< events.EndEvent = end_event';
+---
+> events.StartEvent = start_event-1; %% Due to the fact of histogram and binning the data
+> events.EndEvent = end_event;
+Index: @firingrate/firingrate.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@firingrate/firingrate.m,v
+retrieving revision 1.8
+diff -r1.8 firingrate.m
+1,90c1,90
+< function obj = firingrate(varargin)
+< % constructor for firingrate class
+< %   OBJ = firingrate(varargin) 
+< %      
+< % example as = firingrate('save','redo')
+< % 
+< % dependencies:  adjspikes, stiminfo
+< 
+< Args = struct('RedoLevels',0,'SaveLevels',0,'Auto',0,...
+<     'stimInfoDir',['..' filesep '..' ],'Binsize','frame',...
+<     'Overlap',0,'Count',0,'InstFR',0,'Repetitions',0);
+< 
+< Args.flags = {'Auto','InstFR','Repetitions'};
+< 
+< [Args,varargin2] = getOptArgs(varargin,Args, ...
+< 	'subtract',{'RedoLevels','SaveLevels'}, ...
+< 	'shortcuts',{'redo',{'RedoLevels',1}; 'save',{'SaveLevels',1}}, ...
+< 	'remove',{'Auto'});
+< 
+< Args.classname = 'firingrate';
+< Args.matname = [Args.classname '.mat'];
+< Args.matvarname = 'fr';
+< 
+< if nargin==0
+<     % create empty object
+<     obj = createEmptyObject(Args);
+< elseif((nargin==1) & (isa(varargin{1},'adjspikes')))
+<     obj = varargin{1};
+< elseif Args.RedoLevels==0
+<     % check for saved object
+<     dirlist = nptDir('firingrate.mat','CaseInsensitive');
+<     if ~isempty(dirlist)
+<         fprintf('Loading saved firingrate object...\n');
+<         % load saved object and exit
+<         try
+<             l = load(dirlist(1).name);
+<             obj = l.fr;
+<         catch
+<             fprintf('older format... Recalculating...')
+<             obj = createObject(Args,varargin2{:});
+<         end
+<     else
+<         % no saved object so try to create one
+<         obj = createObject(Args,varargin2{:});
+<     end
+< elseif Args.RedoLevels
+<     obj = createObject(Args,varargin2{:});
+< end
+< 
+< function obj = createEmptyObject(Args)
+< data.numSets = 0;
+< data.setNames = '';
+< data.dlist = [];
+< data.setIndex = [];
+< n = nptdata(0,0);
+< d.data = data;
+< obj = class(d,Args.classname,n);
+< 
+< function obj = createObject(Args,varargin)
+< %get ispikes
+< sp = adjspikes('auto');
+< if isempty(sp)
+<     obj=createEmptyObject;
+<     return
+< end
+< 
+< %get stiminfo
+< %need to go up to session directory so...
+< pdir = pwd;
+< cd(Args.stimInfoDir)
+< stimInfo = stiminfo('auto');
+< cd(pdir)
+< data.numSets = 1;
+< data.setNames{1} = pwd;
+< data.dlist = nptDir;
+< 
+< data.firingRate = calcfiringrate(sp,stimInfo,Args);
+< d.data = data;
+< 
+< number = 1;
+< holdaxis = get(sp,'HoldAxis');
+< nd = nptdata(number,holdaxis,pdir);
+< 
+< obj = class(d,'firingrate',nd);
+< if(Args.SaveLevels>0)
+<     fprintf('Saving firingrate object...\n');
+<     filename = 'firingrate.mat';
+<     fr = obj;
+<     save(filename,'fr')
+< end
+---
+> function obj = firingrate(varargin)
+> % constructor for firingrate class
+> %   OBJ = firingrate(varargin) 
+> %      
+> % example as = firingrate('save','redo')
+> % 
+> % dependencies:  adjspikes, stiminfo
+> 
+> Args = struct('RedoLevels',0,'SaveLevels',0,'Auto',0,...
+>     'stimInfoDir',['..' filesep '..' ],'Binsize','frame',...
+>     'Overlap',0,'Count',0,'InstFR',0,'Repetitions',0);
+> 
+> Args.flags = {'Auto','InstFR','Repetitions'};
+> 
+> [Args,varargin2] = getOptArgs(varargin,Args, ...
+>     'Binsize','Overlap','Count','subtract',...
+>     {'RedoLevels','SaveLevels'},'shortcuts',{'redo',{'RedoLevels',1};...
+>     'save',{'SaveLevels',1}},'remove',{'Auto'});
+> 
+> Args.classname = 'firingrate';
+> Args.matname = [Args.classname '.mat'];
+> Args.matvarname = 'fr';
+> 
+> if nargin==0
+>     % create empty object
+>     obj = createEmptyObject(Args);
+> elseif((nargin==1) & (isa(varargin{1},'adjspikes')))
+>     obj = varargin{1};
+> elseif Args.RedoLevels==0
+>     % check for saved object
+>     dirlist = nptDir('firingrate.mat','CaseInsensitive');
+>     if ~isempty(dirlist)
+>         fprintf('Loading saved firingrate object...\n');
+>         % load saved object and exit
+>         try
+>             l = load(dirlist(1).name);
+>             obj = l.fr;
+>         catch
+>             fprintf('older format... Recalculating...')
+>             obj = createObject(Args,varargin2{:});
+>         end
+>     else
+>         % no saved object so try to create one
+>         obj = createObject(Args,varargin2{:});
+>     end
+> elseif Args.RedoLevels
+>     obj = createObject(Args,varargin2{:});
+> end
+> 
+> function obj = createEmptyObject(Args)
+> data.numSets = 0;
+> data.setNames = '';
+> data.dlist = [];
+> data.setIndex = [];
+> n = nptdata(0,0);
+> d.data = data;
+> obj = class(d,Args.classname,n);
+> 
+> function obj = createObject(Args,varargin)
+> %get ispikes
+> sp = adjspikes('auto');
+> if isempty(sp)
+>     obj=createEmptyObject;
+>     return
+> end
+> 
+> %get stiminfo
+> %need to go up to session directory so...
+> pdir = pwd;
+> cd(Args.stimInfoDir)
+> stimInfo = stiminfo('auto');
+> cd(pdir)
+> data.numSets = 1;
+> data.setNames{1} = pwd;
+> data.dlist = nptDir;
+> 
+> data.firingRate = calcfiringrate(sp,stimInfo,Args);
+> d.data = data;
+> 
+> number = 1;
+> holdaxis = get(sp,'HoldAxis');
+> nd = nptdata(number,holdaxis,pdir);
+> 
+> obj = class(d,'firingrate',nd);
+> if(Args.SaveLevels>0)
+>     fprintf('Saving firingrate object...\n');
+>     filename = 'firingrate.mat';
+>     fr = obj;
+>     save(filename,'fr')
+> end
+Index: @firingrate/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@firingrate/plot.m,v
+retrieving revision 1.9
+diff -r1.9 plot.m
+1,362c1,233
+< function [obj, varargout] = plot(obj,varargin)
+< %@firingrate/plot Plot function for the firingrate object.
+< %   OBJ = plot(OBJ) creates a firing rate plot of the neuronal
+< %   response.
+< 
+< Args = struct('showTitle',1,'Color','b','xlabel',0,...
+<     'linkedZoom',0,'numBins',25,'loglog',0,'semilogy',0,...
+<     'NormalizeXaxis',0,'NormalizeYaxis',0,'LogSpace',0,...
+<     'SubPlot',0,'Fit',0,'BootStrap',0,'Binsize',0,...
+<     'Overlap',0,'Count',0,'InstFR',0,'Surrogates',0,'TossZeros',0);
+< 
+< Args = getOptArgs(varargin,Args,'flags',{'showTitle','xlabel',...
+<         'linkedZoom','loglog','semilogy','NormalizeXaxis',...
+<         'NormalizeYaxis','LogSpace','SubPlot','Fit','BootStrap',...
+<         'InstFR','Surrogates','TossZeros'});
+< 
+< if(isempty(Args.NumericArguments))
+<     n = 1:obj.data.numSets;
+< else
+<     n = Args.NumericArguments{1};
+< end
+< 
+< %%% Normalize the firingrate values by the mean value
+< if Args.NormalizeXaxis
+<     firingRate = obj.data.firingRate(:,n);
+<     m = nanmax(firingRate); %%%% Normalized by the Max Firing Rate for each Cell.
+<     m = repmat(m,size(firingRate,1),1);
+<     firingRate = firingRate./m;
+<     if Args.SubPlot == 0
+<         firingRate = firingRate(:);
+<     end
+<     %%%% Histogram the Firing Rate Distribution via a log scale
+<     if Args.LogSpace
+<         max_values = log10(nanmax(firingRate));
+<         firingRate(find(firingRate == 0)) = NaN;
+<         min_values = log10(nanmin(firingRate));
+<         %%%% Histogram the Firing Rate Distribution
+<         for c = 1:length(n)
+<             bins = (logspace(min_values(c),max_values(c),Args.numBins))';
+<             if c > 1
+<                 [NN] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<                 N = concatenate(N,NN,'Columnwise');
+<                 binedges = concatenate(binedges,bins,'Columnwise');
+<             else
+<                 [N] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<                 binedges = bins;
+<             end
+<         end
+<     else
+<         max_values = nanmax(firingRate);
+<         min_values = nanmin(firingRate);
+<         %%%% Histogram the Firing Rate Distribution
+<         for c = 1:length(n)
+<             bins = (min_values(c):(max_values(c)-min_values(c))/Args.numBins:max_values(c))';
+<             if c > 1
+<                 [NN] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<                 N = concatenate(N,NN,'Columnwise');
+<                 binedges = concatenate(binedges,bins,'Columnwise');
+<             else
+<                 [N] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<                 binedges = bins;
+<             end
+<         end
+<     end
+< else
+<     if Args.TossZeros
+<         firingRate = obj.data.firingRate(:,n);
+<         firingRate(find(firingRate==0)) = NaN;
+<     else
+<         firingRate = obj.data.firingRate(:,n);
+<     end
+<     max_values = nanmax(firingRate);
+<     min_values = nanmin(firingRate);
+<     %%%% Histogram the Firing Rate Distribution
+<     for c = 1:length(n)
+<         bins = (min_values(c):(max_values(c)-min_values(c))/Args.numBins:max_values(c))';
+<         if c > 1
+<             [NN] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<             N = concatenate(N,NN,'Columnwise');
+<             binedges = concatenate(binedges,bins,'Columnwise');
+<         else
+<             [N] = histcie(firingRate(:,c),bins,'DataCols','DropLast');
+<             binedges = bins;
+<         end
+<     end
+< end
+< 
+< %%%% Normalize to a Probablility %%%%
+< if Args.NormalizeYaxis
+<     tot = sum(N);
+<     tot = repmat(tot,size(N,1),1);
+<     N = N./tot;
+< end
+< 
+< %%%%% Plot the Data %%%%%%%%%%
+< numSets = obj.data.numSets;
+< %%%% Ploting Arguments %%%%
+< if Args.SubPlot
+<     for i = 1:numSets
+<         if Args.Surrogates
+<             x = binedges(:,i);x = x(2:end);
+<             y = N(:,i);
+<             non_zeros = find(y>0);
+<             y = log10(y(non_zeros));
+<             x = x(non_zeros);
+<             [fitobj,goodness,output] = fit(x,y,'poly1');
+<             exp(i) = goodness.adjrsquare;
+<             [fitobj,goodness,output] = fit(x,y,fittype('a + b*log(x)'));
+<             power(i) = goodness.adjrsquare;
+<             %%% Load the Surrogate Spike data
+<             eval(['cd ' obj.data.setNames{i}]) % Change to the data directory
+<             files = nptDir('frames*');
+<             if ~isempty(files)
+<                 cd ../..; st = stiminfo('auto');
+<                 eval(['cd ' obj.data.setNames{i}]) % Change to the data directory
+<                 [R,H,S_Inv] = fitsurrogatefr(files,st,Args);
+<                 Surrogate_Inv{i} = S_Inv;
+<                 R_Values{i} = R;
+<                 Mean_R_Values(i,:) = mean(R);
+<                 Max_R_Values(i) = max(mean(R));
+<                 nptSubplot(numSets,i);
+<                 for r = 1:length(H)
+<                     hold on
+<                     plot(H{r}(:,1),H{r}(:,2))
+<                 end
+<                 plot(x,y,'r-*')
+<                 xlim([0 x(end)])
+<                 %boxplot(R);xlabel('');ylabel('')
+<                 %hold on
+<                 %plot(1,exp(i),'*k')
+<                 %plot(2,power(i),'*k')
+<             else
+<                 R_Values{i} = [];
+<                 Mean_R_Values(i,:) = [0 0];
+<                 Max_R_Values(i,:) = [0 0];
+<             end
+<         elseif Args.BootStrap
+<             %%% Fit the original histogramed Data
+<             x = binedges(:,i);x = x(2:end);
+<             y = N(:,i);
+<             non_zeros = find(y>0);
+<             y = log10(y(non_zeros));
+<             x = x(non_zeros);
+<             [fitobj,goodness,output] = fit(x,y,'poly1');
+<             exp(i) = goodness.adjrsquare;
+<             [fitobj,goodness,output] = fit(x,y,fittype('a + b*log(x)'));
+<             power(i) = goodness.adjrsquare;
+<             %%% Load the raw Spike Rate data
+<             data = firingRate(:,i); data = data(find(data>=0)); % Take out the NaN values
+<             eval(['cd ' obj.data.setNames{i}]) % Change to the data directory
+<             as = adjspikes('auto'); cd ../..; st = stiminfo('auto');
+<             [data] = calcfiringraterepetitions(obj,as,st,Args);
+<             x = binedges(:,i);
+<             data = histcie(data,x,'DataCols','DropLast');data = data'; % Invert for repetitions
+<             %%% Run the Bootstrap function to get R value statistics
+<             [R] = bootstrp(100,'fitfr',data); % First Column values are exp and second are
+<             %% for the power fits for the r-squared values.
+<             R_Values{i} = R;
+<             Mean_R_Values(i,:) = mean(R);
+<             Max_R_Values(i) = max(mean(R));
+<             nptSubplot(numSets,i);
+<             boxplot(R);xlabel('');ylabel('')
+<             hold on
+<             plot(1,exp(i),'*k')
+<             plot(2,power(i),'*k')
+<         else
+<             nptSubplot(numSets,i);
+<             x = binedges(:,i); x = x(2:end); % Equal the number of values
+<             y = N(:,i);
+<             if Args.loglog
+<                 if Args.Fit
+<                     non_zeros = find(y>0);
+<                     y = log10(y(non_zeros));
+<                     x = log10(x(non_zeros));
+<                     plot(x,y,[Args.Color '-*'])
+<                     Args.FitName1 = 'exp1'; % Exp Fit
+<                     Args.FitName2 = 'poly1'; % Power Fit
+<                 else
+<                     plot(x,y,[Args.Color '-*'])
+<                     set(gca,'YScale','log','XScale','log')
+<                 end
+<             elseif Args.semilogy
+<                 if Args.Fit
+<                     non_zeros = find(y>0);
+<                     y = log10(y(non_zeros));
+<                     x = x(non_zeros);
+<                     Args.FitName1 = 'poly1'; % Exp Fit
+<                     Args.FitName2 = fittype('a + b*log(x)'); % Power Fit
+<                     plot(x,y,[Args.Color '-*'])
+<                     xlim([min(x) max(x)])
+<                 else
+<                     plot(x,y,[Args.Color '-*'])
+<                     set(gca,'YScale','log')
+<                     xlim([min(x) max(x)])
+<                 end
+<             end
+<             a = axis; %% Get the axis
+<             if Args.Fit
+<                 [fitobj,goodness,output] = fit(x,y,Args.FitName1);
+<                 exp(i) = (round((goodness.adjrsquare*100)))/100;
+<                 hold on; plot(fitobj); legend off
+<                 [fitobj,goodness,output] = fit(x,y,Args.FitName2);
+<                 power(i) = (round((goodness.adjrsquare*100)))/100;
+<                 hold on; plot(fitobj); legend off
+<                 title(['E:',num2str(exp(i)) ' P:',num2str(power(i))])
+<             end
+<             axis(a)
+<             hold on
+<             xlabel('')
+<             ylabel('')
+<         end
+<     end
+< else
+<     x = binedges(2:end); % Equal the number of values
+<     y = N;
+<     if Args.loglog
+<         if Args.Fit
+<             non_zeros = find(y>0);
+<             y = log10(y(non_zeros));
+<             x = log10(x(non_zeros));
+<             plot(x,y,[Args.Color '-*'])
+<             Args.FitName1 = 'exp1'; % Exp Fit
+<             Args.FitName2 = 'poly1'; % Power Fit
+<         else
+<             plot(x,y,[Args.Color '-*'])
+<             set(gca,'YScale','log','XScale','log')
+<         end
+<     elseif Args.semilogy
+<         if Args.Fit
+<             non_zeros = find(y>0);
+<             y = log10(y(non_zeros));
+<             x = x(non_zeros);
+<             Args.FitName1 = 'poly1'; % Exp Fit
+<             Args.FitName2 = fittype('a + b*log(x)'); % Power Fit
+<             plot(x,y,[Args.Color '-*'])
+<             xlim([min(x) max(x)])
+<         else
+<             plot(x,y,[Args.Color '-*'])
+<             set(gca,'YScale','log')
+<             xlim([min(x) max(x)])
+<         end
+<     end
+<     a = axis; %% Get the axis
+<     if Args.Fit
+<         [fitobj,goodness,output] = fit(x,y,Args.FitName1);
+<         exp = (round((goodness.adjrsquare*100)))/100;
+<         hold on; plot(fitobj); legend off
+<         [fitobj,goodness,output] = fit(x,y,Args.FitName2);
+<         power = (round((goodness.adjrsquare*100)))/100;
+<         hold on; plot(fitobj); legend off
+<         title([obj.data.setNames{n} 'Exp: ',num2str(exp) '  Power: ',num2str(power)])
+<     end
+<     axis(a)
+<     hold off
+< end
+< 
+< if Args.SubPlot
+<     nptSubplot(numSets,'BottomLeft');
+< end
+< 
+< if Args.NormalizeYaxis
+<     ylabel('Probability')
+< elseif Args.BootStrap
+<     ylabel('R^2')
+< else
+<     if Args.Fit
+<         ylabel('Log (Number of Occurences)')
+<     else
+<         ylabel('Number of Occurences')
+<     end
+< end
+< 
+< if Args.NormalizeXaxis
+<     xlabel('Normalized Rate')
+< elseif Args.BootStrap
+<     xlabel('Exp vs. Pwr')
+< else
+<     xlabel('Spike Rate or Spike Count')
+< end
+< 
+< if Args.Surrogates
+<     figure
+<     for i = 1:numSets
+<         nptSubplot(numSets,i);
+<         if ~isempty(R_Values{i}(:))
+<             hist(R_Values{i}(:,1),0:.01:1)
+<             h = findobj(gca,'Type','patch');
+<             set(h,'FaceColor','r')
+<             hold on
+<             hist(R_Values{i}(:,2),0:.01:1)
+<             plot(exp(i),10,'*g')
+<             plot(power(i),10,'*m')
+<             xlim([min2(R_Values{i}) max2(R_Values{i})])
+<             [H,P] = ttest2(R_Values{i}(:,1),R_Values{i}(:,2),.05);
+<             title(['H:',num2str(H) ' P:',num2str(P)])
+<             H_Values(i) = H;
+<             P_Values(i) = P;
+<         else
+<             H_Values(i) = NaN;
+<             P_Values(i) = NaN;
+<         end
+<     end
+<     figure
+<     for i = 1:numSets
+<         %plot(R_Values{i}(:,2),R_Values{i}(:,1),[Args.Color 'x'])
+<         %hold on
+<         %plot(power(i),exp(i),'or','LineWidth',2)
+<         hold on
+<         if ~isempty(R_Values{i}(:))
+<             plot(Mean_R_Values(i,2),Mean_R_Values(i,1),'ok','LineWidth',2)
+<             hold on
+<             text(Mean_R_Values(i,2),Mean_R_Values(i,1),['  ' num2str(i)])
+<             if H_Values(i) == 1
+<                 if Max_R_Values(i) > .75
+<                     plot(Mean_R_Values(i,2),Mean_R_Values(i,1),'or','LineWidth',2)
+<                 end
+<             end
+<         end
+<     end
+<     line([0 1],[0 1],'Color','k')
+<     xlabel('R^2 Power')
+<     ylabel('R^2 Exp')
+<     Surrogate_Inv
+< end
+< 
+< 
+< %%%% Plot the R_squared values for each fit.
+< if Args.BootStrap
+<     figure
+<     for i = 1:numSets
+<         nptSubplot(numSets,i);
+<         hist(R_Values{i}(:,1),0:.01:1)
+<         h = findobj(gca,'Type','patch');
+<         set(h,'FaceColor','r')
+<         hold on
+<         hist(R_Values{i}(:,2),0:.01:1)
+<         plot(exp(i),10,'*g')
+<         plot(power(i),10,'*m')
+<         xlim([min2(R_Values{i}) max2(R_Values{i})])
+<         [H,P] = ttest2(R_Values{i}(:,1),R_Values{i}(:,2),.01);
+<         title(['H:',num2str(H) ' P:',num2str(P)])
+<         H_Values(i) = H;
+<         P_Values(i) = P;
+<     end
+<     figure
+<     for i = 1:numSets
+<         %plot(R_Values{i}(:,2),R_Values{i}(:,1),[Args.Color 'x'])
+<         %hold on
+<         %plot(power(i),exp(i),'or','LineWidth',2)
+<         hold on
+<         plot(Mean_R_Values(i,2),Mean_R_Values(i,1),'ok','LineWidth',2)
+<         hold on
+<         text(Mean_R_Values(i,2),Mean_R_Values(i,1),['  ' num2str(i)])
+<         if H_Values(i) == 1
+<             if max(Max_R_Values(i)) > .75
+<                 plot(Mean_R_Values(i,2),Mean_R_Values(i,1),'or','LineWidth',2)
+<             end
+<         end
+<     end
+<     line([0 1],[0 1],'Color','k')
+<     xlabel('R^2 Power')
+<     ylabel('R^2 Exp')
+---
+> function [obj, varargout] = plot(obj,varargin)
+> %@firingrate/plot Plot function for the firingrate object.
+> %   OBJ = plot(OBJ) creates a firing rate plot of the neuronal
+> %   response.
+> 
+> Args = struct('showTitle',1, ...
+>     'Color','b','xlabel',0,'linkedZoom',0,'numBins',25, ...
+>     'loglog',0,'semilogy',0,'semilogx',0,'NormalizeXaxis',0, ...
+>     'NormalizeYaxis',0,'LogSpace',0,'TossZeros',0,'SubPlot',0,...
+>     'Fit',0,'BootStrap',0);  %yaxis probability rather than num of occurences
+> 
+> Args.flags = {'showTitle','xlabel','NormalizeXaxis','NormalizeYaxis',...
+>     'linkedZoom','loglog','LogSpace','TossZeros','SubPlot','Fit',...
+>     'semilogy','semilogx','BootStrap'};
+> 
+> Args = getOptArgs(varargin,Args,'Color','numBins','FitType');
+> 
+> if(isempty(Args.NumericArguments))
+>     n = 1:obj.data.numSets;
+> else
+>     n = Args.NumericArguments{1};
+> end
+> 
+> %%% Normalize the firingrate values by the mean value
+> if Args.NormalizeXaxis
+>     firingRate = obj.data.firingRate(:,n);
+>     if Args.TossZeros
+>         zero_index = find(firingRate == 0);
+>         firingRate(zero_index) = NaN;
+>         m = nanmax(firingRate); %%%% Normalized by the Mean Firing Rate for each Cell.
+>         m = repmat(m,size(firingRate,1),1);
+>         firingRate = firingRate./m;
+>     else
+>         m = nanmax(firingRate); %%%% Normalized by the Mean Firing Rate for each Cell.
+>         m = repmat(m,size(firingRate,1),1);
+>         firingRate = firingRate./m;
+>     end
+>     if Args.SubPlot == 0
+>         firingRate = firingRate(:);
+>     end
+>     %%%% Histogram the Firing Rate Distribution via a log scale
+>     if Args.LogSpace
+>         max_value = log10(max2(firingRate));
+>         firingRate(find(firingRate == 0)) = NaN;
+>         min_value = log10(nanmin(min(firingRate)));
+>         binedges = logspace(min_value,max_value,Args.numBins);
+>     else
+>         binedges = nanmin(firingRate(:)):(nanmax(firingRate(:))-nanmin(firingRate(:)))/Args.numBins:nanmax(firingRate(:));
+>     end
+>     [N] = histcie(firingRate,binedges,'DataCols','DropLast');
+> else
+>     firingRate = obj.data.firingRate(:,n);
+>     max_value = max2(firingRate);
+>     %%%% Histogram the Firing Rate Distribution
+>     binedges = 0:max_value/Args.numBins:max_value;
+>     [N] = histcie(firingRate,binedges,'DataCols','DropLast');
+> end
+> 
+> %%%% Normalize to a Probablility %%%%
+> if Args.NormalizeYaxis
+>     tot = sum(N);
+>     tot = repmat(tot,size(N,1),1);
+>     N = N./tot;
+> end
+> 
+> %%%%% Plot the Data %%%%%%%%%%
+> numSets = obj.data.numSets;
+> %%%% Ploting Arguments %%%%
+> if Args.SubPlot
+>     for i = 1:numSets
+>         if Args.BootStrap
+>             data = firingRate(:,i);
+>             data = data(find(data>=0)); % Take out the NaN values
+>             [R] = bootstrp(100,'FitFR',data); % First Column values are exp and second are
+>             %% for the power fits for the r-squared values.
+>             nptSubplot(numSets,i);
+>             boxplot(R);xlabel('');ylabel('')
+>             R_Values{i} = R;
+>             binedges = (min(data):(max(data)-min(data))/100:max(data))';
+>             %% Count the number of FR values
+>             [N] = histcie(data,binedges,'DataCols','DropLast');
+>             binedges = binedges(2:end);
+>             non_zeros = find(N>0);
+>             N = log(N(non_zeros)); % Take out the zero values for the fit and takes the log
+>             binedges = binedges(non_zeros); % Take out the zero values for the fit
+>             [fitobj,goodness,output] = fit(binedges,N,'poly1');
+>             exp(i) = goodness.adjrsquare;
+>             [fitobj,goodness,output] = fit(binedges,N,fittype('a + b*log(x)'));
+>             power(i) = goodness.adjrsquare;
+>         else
+>             nptSubplot(numSets,i);
+>             x = binedges(2:end)'; %x = x/x(end); %Normalize the x axis by the max.
+>             y = N(:,i);
+>             if Args.loglog
+>                 if Args.Fit
+>                     non_zeros = find(y>0);
+>                     y = log(y(non_zeros)); % Take out the zero values for the fit
+>                     x = log(x(non_zeros)); % Take out the zero values for the fit
+>                     plot(x,y,[Args.Color '-*'])
+>                     Args.FitName1 = 'exp1';
+>                     Args.FitName2 = 'poly1';
+>                 else
+>                     plot(x,y,[Args.Color '-*'])
+>                 end
+>             elseif Args.semilogy
+>                 if Args.Fit
+>                     non_zeros = find(y>0);
+>                     y = log(y(non_zeros)); % Take out the zero values for the fit
+>                     x = x(non_zeros); % Take out the zero values for the fit
+>                     Args.FitName1 = 'poly1';
+>                     Args.FitName2 = fittype('a + b*log(x)');
+>                     plot(x,y,[Args.Color '-*'])
+>                 else
+>                     plot(x,y,[Args.Color '-*'])
+>                     set(gca,'YScale','log')
+>                 end
+>             elseif Args.semilogx
+>                 if Args.Fit
+>                     non_zeros = find(y>0)
+>                     y = y(non_zeros); % Take out the zero values for the fit
+>                     x = log(x(non_zeros)); % Take out the zero values for the fit
+>                     plot(x,y,[Args.Color '-*'])
+>                 else
+>                     plot(x,y,[Args.Color '-*'])
+>                     set(gca,'XScale','log')
+>                 end
+>             end
+>             a = axis; %% Get the axis
+>             if Args.Fit
+>                 [fitobj,goodness,output] = fit(x,y,Args.FitName1);
+>                 hold on
+>                 plot(fitobj)
+>                 legend off
+>                 exp(i) = goodness.adjrsquare;
+>                 [fitobj,goodness,output] = fit(x,y,Args.FitName2);
+>                 hold on
+>                 plot(fitobj)
+>                 legend off
+>                 power(i) = goodness.adjrsquare;
+>                 title(['E:',num2str(exp(i)) ' P:',num2str(power(i))])
+>             end
+>             axis(a)
+>             hold on
+>         end
+>     end
+> else
+>     x = binedges(2:end)';
+>     y = N;
+>     if Args.loglog
+>         if Args.Fit
+>             non_zeros = find(y>0);
+>             y = log(y(non_zeros)); % Take out the zero values for the fit
+>             x = log(x(non_zeros)); % Take out the zero values for the fit
+>             plot(x,y,[Args.Color '-*'])
+>             Args.FitName1 = 'exp1';
+>             Args.FitName2 = 'poly1';
+>         else
+>             plot(x,y,[Args.Color '-*'])
+>             set(gca,'XScale','log','YScale','log')
+>         end
+>     elseif Args.semilogy
+>         if Args.Fit
+>             non_zeros = find(y>0);
+>             y = log(y(non_zeros)); % Take out the zero values for the fit
+>             x = x(non_zeros); % Take out the zero values for the fit
+>             plot(x,y,[Args.Color '-*'])
+>             Args.FitName1 = 'poly1';
+>             Args.FitName2 = fittype('a + b*log(x)');
+>         else
+>             plot(x,y,[Args.Color '-*'])
+>             set(gca,'YScale','log')
+>         end
+>     elseif Args.semilogx
+>         if Args.Fit
+>             non_zeros = find(y>0);
+>             y = y(non_zeros); % Take out the zero values for the fit
+>             x = log(x(non_zeros)); % Take out the zero values for the fit
+>             plot(x,y,[Args.Color '-*'])
+>         else
+>             plot(x,y,[Args.Color '-*'])
+>             set(gca,'XScale','log')
+>         end
+>     end
+>     a = axis; %% Get the axis
+>     if Args.Fit
+>         [fitobj,goodness,output] = fit(x,y,Args.FitName1);
+>         hold on
+>         plot(fitobj)
+>         legend off
+>         exp = goodness.adjrsquare;
+>         [fitobj,goodness,output] = fit(x,y,Args.FitName2);
+>         hold on
+>         plot(fitobj)
+>         legend off
+>         power = goodness.adjrsquare;
+>         title(['E:',num2str(exp) ' P:',num2str(power)])
+>     end
+>     axis(a)
+>     hold off
+> end
+> 
+> 
+> if Args.SubPlot
+>     nptSubplot(numSets,'BottomLeft');
+> end
+> 
+> if Args.NormalizeYaxis
+>     ylabel('Probability')
+> elseif Args.BootStrap
+>     ylabel('R^2')
+> else
+>     ylabel('Number of Occurences')
+> end
+> 
+> if Args.NormalizeXaxis
+>     xlabel('Normalized Rate')
+> elseif Args.BootStrap
+>     xlabel('Exp vs. Pwr')
+> else
+>     xlabel('Rate or Count')
+> end
+> 
+> %%%% Plot the R_squared values for each fit.
+> if Args.BootStrap
+>     figure
+>     for i = 1:numSets
+>         plot(R_Values{i}(:,2),R_Values{i}(:,1),[Args.Color 'x'])
+>         hold on
+>         plot(power(i),exp(i),'or','LineWidth',2)
+>     end
+>     line([0 1],[0 1],'Color','k')
+>     xlabel('R^2 Power')
+>     ylabel('R^2 Exp')
+Index: @firingrate/plus.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@firingrate/plus.m,v
+retrieving revision 1.2
+diff -r1.2 plus.m
+1,44c1,44
+< function r = plus(p,q,varargin)
+< %@firingrate/plus Overloaded plus function for firingrate objects.
+< %   R = plus(P,Q) combines sparsity objects P and Q and returns the
+< %   firingrate object R.
+< 
+< % get name of class
+< classname = mfilename('class');
+< 
+< % check if first input is the right kind of object
+< if(~isa(p,classname))
+< 	% check if second input is the right kind of object
+< 	if(~isa(q,classname))
+< 		% both inputs are not the right kind of object so create empty
+< 		% object and return it
+< 		r = feval(classname);
+< 	else
+< 		% second input is the right kind of object so return that
+< 		r = q;
+< 	end
+< else
+< 	if(~isa(q,classname))
+< 		% p is the right kind of object but q is not so just return p
+< 		r = p;
+<     elseif(isempty(p))
+<         % p is right object but is empty so return q, which should be
+<         % right object
+<         r = q;
+<     elseif(isempty(q))
+<         % p are q are both right objects but q is empty while p is not
+<         % so return p
+<         r = p;
+< 	else
+< 		% both p and q are the right kind of objects so add them 
+< 		% together
+< 		% assign p to r so that we can be sure we are returning the right
+< 		% object
+< 		r = p;
+<         r.data.numSets = p.data.numSets + q.data.numSets;
+< 		r.data.setNames = {p.data.setNames{:} q.data.setNames{:}};
+< 		r.data.dlist = [p.data.dlist; q.data.dlist];
+<         r.data.firingRate = concatenate(r.data.firingRate, q.data.firingRate,'Columnwise');
+< 		% add nptdata objects as well
+< 		r.nptdata = plus(p.nptdata,q.nptdata);
+<     end
+---
+> function r = plus(p,q,varargin)
+> %@firingrate/plus Overloaded plus function for firingrate objects.
+> %   R = plus(P,Q) combines sparsity objects P and Q and returns the
+> %   firingrate object R.
+> 
+> % get name of class
+> classname = mfilename('class');
+> 
+> % check if first input is the right kind of object
+> if(~isa(p,classname))
+> 	% check if second input is the right kind of object
+> 	if(~isa(q,classname))
+> 		% both inputs are not the right kind of object so create empty
+> 		% object and return it
+> 		r = feval(classname);
+> 	else
+> 		% second input is the right kind of object so return that
+> 		r = q;
+> 	end
+> else
+> 	if(~isa(q,classname))
+> 		% p is the right kind of object but q is not so just return p
+> 		r = p;
+>     elseif(isempty(p))
+>         % p is right object but is empty so return q, which should be
+>         % right object
+>         r = q;
+>     elseif(isempty(q))
+>         % p are q are both right objects but q is empty while p is not
+>         % so return p
+>         r = p;
+> 	else
+> 		% both p and q are the right kind of objects so add them 
+> 		% together
+> 		% assign p to r so that we can be sure we are returning the right
+> 		% object
+> 		r = p;
+>         r.data.numSets = p.data.numSets + q.data.numSets;
+> 		r.data.setNames = {p.data.setNames{:} q.data.setNames{:}};
+> 		r.data.dlist = [p.data.dlist; q.data.dlist];
+>         r.data.firingRate = concatenate(r.data.firingRate, q.data.firingRate,'Columnwise');
+> 		% add nptdata objects as well
+> 		r.nptdata = plus(p.nptdata,q.nptdata);
+>     end
+Index: @firingrate/subsref.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@firingrate/subsref.m,v
+retrieving revision 1.1
+diff -r1.1 subsref.m
+1,33c1,33
+< function [b,res] = subsref(obj,index)
+< %firingrate/subsref Index function for firingrate object.
+< %
+< %   Dependencies: None.
+< 
+< res = 1;
+< myerror = 0;
+< unknown = 0;
+< 
+< indlength = length(index);
+< 
+< switch index(1).type
+< case '.'
+< 	switch index(1).subs
+< 	case 'data'
+< 		% if this is the only index, just return the entire thing
+< 		if(indlength==1)
+< 			b = obj.data;
+< 		else
+< 			% there are more than 1 index so pass on the subsref call
+< 			b = subsref(obj.data,index(2:end));
+< 		end
+< 	otherwise 
+< 		unknown = 1;
+< 	end
+< otherwise
+< 	unknown = 1;
+< end
+< 
+< if unknown == 1
+< 	% pass to parent to see if they know what to do with this index
+< 	[b,res] = subsref(obj.nptdata,index);
+< end
+---
+> function [b,res] = subsref(obj,index)
+> %firingrate/subsref Index function for firingrate object.
+> %
+> %   Dependencies: None.
+> 
+> res = 1;
+> myerror = 0;
+> unknown = 0;
+> 
+> indlength = length(index);
+> 
+> switch index(1).type
+> case '.'
+> 	switch index(1).subs
+> 	case 'data'
+> 		% if this is the only index, just return the entire thing
+> 		if(indlength==1)
+> 			b = obj.data;
+> 		else
+> 			% there are more than 1 index so pass on the subsref call
+> 			b = subsref(obj.data,index(2:end));
+> 		end
+> 	otherwise 
+> 		unknown = 1;
+> 	end
+> otherwise
+> 	unknown = 1;
+> end
+> 
+> if unknown == 1
+> 	% pass to parent to see if they know what to do with this index
+> 	[b,res] = subsref(obj.nptdata,index);
+> end
+Index: @firingrate/private/CalcFiringRate.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@firingrate/private/CalcFiringRate.m,v
+retrieving revision 1.5
+diff -r1.5 CalcFiringRate.m
+1,117c1,111
+< function [FR] = CalcFiringRate(obj,stimInfo,Args)
+< 
+< % The function will calculate the firing rates based on the bisize or the
+< % frame duration. Also the Firing rate can be calculated with an Overlap
+< % value or an adapted binsize depending on the desired average spike rate.
+< 
+< Spiketrain = obj.data.adjSpiketrain;
+< FramePoints = obj.data.adjFramePoints;
+< numFrames = stimInfo.data.catInfo.num_frames;
+< num_repetitions = stimInfo.data.catInfo.num_repetitions;
+< FrameDuration = stimInfo.data.catInfo.frame_duration;
+< binsize = Args.Binsize;
+< 
+< if Args.Count
+<     mean_sc = length(Spiketrain)/(FramePoints(end)/1000);
+<     binsize = (Args.Count/mean_sc)*1000; % Get the binsize for a desired rate in spikes/second    
+< end
+< 
+< if Args.InstFR
+<     binsize=1;
+< end
+< 
+< if ~isnumeric(binsize)  %% If a binsize is not avaliable use the frame duration %%%%
+<       
+<     if Args.Overlap %% If a specified overlap is desired, the output will be a single vector
+<         
+<         binsize = FrameDuration; 
+<         m = round(binsize/Args.Overlap);
+<         shape = ones(1,m);
+<         edges = FramePoints(1):Args.Overlap:FramePoints(end);
+<         frameCounts = sum(histc(Spiketrain,edges,2),1);
+<         spike_matrix = conv(frameCounts,shape)';
+<         spike_matrix(1:m-1)=[];
+<         FR = spike_matrix;%/(binsize/1000);
+<         
+<     else
+<         
+<         frameCounts = histcie(Spiketrain,FramePoints,'DropLast');
+<         spike_matrix = reshape(frameCounts,numFrames,[])';
+<         % need this to convert spike counts to rate
+<         binsize = FrameDuration; 
+<         FR = (mean(spike_matrix))'/(binsize/1000);
+<         
+<     end
+<     
+< else    
+<     
+<     if Args.Overlap % If a specified overlap is desired, the output will be a single vector
+<         
+<         m = round(binsize/Args.Overlap);
+<         shape = ones(1,m);
+<         edges = FramePoints(1):Args.Overlap:FramePoints(end);
+<         frameCounts = sum(histc(Spiketrain,edges,2),1);
+<         spike_matrix = conv(frameCounts,shape)';
+<         spike_matrix(1:m-1)=[];
+<         FR = spike_matrix;%/(binsize/1000);
+<         
+<     elseif Args.Count % If a specified SpikeRate is desired, the output will be a single vector
+< 
+<         edges = FramePoints(1):binsize:FramePoints(end);
+<         spike_matrix = histc(Spiketrain,edges)';
+<         FR = spike_matrix;%/(binsize/1000);
+<         
+<     elseif Args.InstFR
+<         
+<         isi = diff(Spiketrain)/1000; % Convert to Seconds
+<         FR = 1./isi';
+<         
+<     elseif Args.Repetitions
+<         
+<         %%% Create the spike count matrix for specified bin size %%%%
+<         % get number of bin sizes in each repetition by dividing the
+<         % duration of the first repetition by bin size and then taking the
+<         % floor so that we don't include spikes from the next frame in the last
+<         % bin
+<         numbins = floor( (FramePoints(numFrames+1)-FramePoints(1))/binsize );
+<         % add 1 to numbins since we start from 0
+<         nbins1 = numbins + 1;
+<         % create second matrix in matrix multiplication which contains a row of
+<         % ones, followed by vector increasing from 0 to duration in steps of
+<         % binsize. 
+<         m1 = [ones(nbins1,1) (0:binsize:(numbins*binsize))'];
+<         rep1 = num_repetitions - 1;
+<         % create vector of time of first frame of each repetition
+<         repframe = FramePoints(1:numFrames:(numFrames*rep1+1));
+<         % create first matrix in matrix multiplication which is the start time
+<         % of each repeition in the first column and ones in the second column
+<         m2 = [repframe; ones(1,num_repetitions)];
+<         % create histcie-edges using matrix multiplication
+<         binEdges = m1 * m2;
+<         % do histcie using all the binEdges. This will add 1 bin in each
+<         % repetition, which is the remainder from dividing the repetition
+<         % duration with binsize. Even if duration divides evenly into binsize, 
+<         % there will be an extra bin since the next repetition always starts
+<         % from the end of the previous repetition. The histcie function is able
+<         % to handle bin edges that are equal so this works out well. We will
+<         % keep the last point since that will allow us to drop the last row
+<         % after we reshape. Otherwise, we will be missing the interval due to
+<         % the dividing the last repetition by binsize
+<         frameCounts = histcie(Spiketrain,binEdges(:));
+<         % reshape into numbins+1 x num_repetitions since the last bin will be
+<         % remainder from dividing repetition duration by bin size.
+<         sm = reshape(frameCounts,nbins1,[]);
+<         % drop the last row since it is an incomplete window
+<         spike_matrix = sm(1:numbins,:)';
+<         FR = mean(spike_matrix); %/(binsize/1000))';
+<            
+<     else
+<         
+<         edges = FramePoints(1):binsize:FramePoints(end);
+<         spike_matrix = histc(Spiketrain,edges)';
+<         FR = spike_matrix;%/(binsize/1000);
+<         
+<     end
+<     
+< end
+< 
+---
+> function [FR] = calcfiringrate(obj,stimInfo,Args)
+> 
+> % The function will calculate the firing rates based on the bisize or the
+> % frame duration. Also the Firing rate can be calculated with an Overlap
+> % value or an adapted binsize depending on the desired average spike rate.
+> 
+> Spiketrain = obj.data.adjSpiketrain;
+> FramePoints = obj.data.adjFramePoints;
+> numFrames = stimInfo.data.catInfo.num_frames;
+> num_repetitions = stimInfo.data.catInfo.num_repetitions;
+> FrameDuration = stimInfo.data.catInfo.frame_duration;
+> binsize = Args.Binsize;
+> 
+> if Args.Count
+>     mean_sc = length(Spiketrain)/(FramePoints(end)/1000);
+>     binsize = (Args.Count/mean_sc)*1000; % Get the binsize for a desired rate in spikes/second    
+> end
+> 
+> if Args.InstFR
+>     binsize=1;
+> end
+> 
+> if ~isnumeric(binsize)  %% If a binsize is not avaliable use the frame duration %%%%
+>       
+>     if Args.Overlap %% If a specified overlap is desired, the output will be a single vector
+>         
+>         binsize = FrameDuration; 
+>         m = round(binsize/Args.Overlap);
+>         shape = ones(1,m);
+>         edges = FramePoints(1):Args.Overlap:FramePoints(end);
+>         frameCounts = sum(histc(Spiketrain,edges,2),1);
+>         spike_matrix = conv(frameCounts,shape)';
+>         spike_matrix(1:m-1)=[];
+>         FR = spike_matrix;%/(binsize/1000);
+>         
+>     else
+>         
+>         frameCounts = histcie(Spiketrain,FramePoints,'DropLast');
+>         spike_matrix = reshape(frameCounts,numFrames,[])';
+>         % need this to convert spike counts to rate
+>         binsize = FrameDuration; 
+>         FR = (mean(spike_matrix))'/(binsize/1000);
+>         
+>     end
+>     
+> else    
+>     
+>     if Args.Overlap % If a specified overlap is desired, the output will be a single vector
+>         
+>         m = round(binsize/Args.Overlap);
+>         shape = ones(1,m);
+>         edges = FramePoints(1):Args.Overlap:FramePoints(end);
+>         frameCounts = sum(histc(Spiketrain,edges,2),1);
+>         spike_matrix = conv(frameCounts,shape)';
+>         spike_matrix(1:m-1)=[];
+>         FR = spike_matrix;%/(binsize/1000);
+>         
+>     elseif Args.Count % If a specified SpikeRate is desired, the output will be a single vector
+> 
+>         edges = FramePoints(1):binsize:FramePoints(end);
+>         spike_matrix = histc(Spiketrain,edges)';
+>         FR = spike_matrix;%/(binsize/1000);
+>         
+>     elseif Args.InstFR
+>         
+>         isi = diff(Spiketrain)/1000; % Convert to Seconds
+>         FR = 1./isi';
+>         
+>     elseif Args.Repetitions
+>         
+>         %%% Create the spike count matrix for specified bin size %%%%
+>         % get number of bin sizes in each repetition by dividing the
+>         % duration of the first repetition by bin size and then taking the
+>         % floor so that we don't include spikes from the next frame in the last
+>         % bin
+>         numbins = floor( (FramePoints(numFrames+1)-FramePoints(1))/binsize );
+>         % add 1 to numbins since we start from 0
+>         nbins1 = numbins + 1;
+>         % create second matrix in matrix multiplication which contains a row of
+>         % ones, followed by vector increasing from 0 to duration in steps of
+>         % binsize. 
+>         m1 = [ones(nbins1,1) (0:binsize:(numbins*binsize))'];
+>         rep1 = num_repetitions - 1;
+>         % create vector of time of first frame of each repetition
+>         repframe = FramePoints(1:numFrames:(numFrames*rep1+1));
+>         % create first matrix in matrix multiplication which is the start time
+>         % of each repeition in the first column and ones in the second column
+>         m2 = [repframe; ones(1,num_repetitions)];
+>         % create histcie-edges using matrix multiplication
+>         binEdges = m1 * m2;
+>         % do histcie using all the binEdges. This will add 1 bin in each
+>         % repetition, which is the remainder from dividing the repetition
+>         % duration with binsize. Even if duration divides evenly into binsize, 
+>         % there will be an extra bin since the next repetition always starts
+>         % from the end of the previous repetition. The histcie function is able
+>         % to handle bin edges that are equal so this works out well. We will
+>         % keep the last point since that will allow us to drop the last row
+>         % after we reshape. Otherwise, we will be missing the interval due to
+>         % the dividing the last repetition by binsize
+>         frameCounts = histcie(Spiketrain,binEdges(:));
+>         % reshape into numbins+1 x num_repetitions since the last bin will be
+>         % remainder from dividing repetition duration by bin size.
+>         sm = reshape(frameCounts,nbins1,[]);
+>         % drop the last row since it is an incomplete window
+>         spike_matrix = sm(1:numbins,:)';
+>         FR = mean(spike_matrix); %/(binsize/1000))';
+>            
+>     end    
+>     
+> end
+> 
+Index: @jointevents/jointevents.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@jointevents/jointevents.m,v
+retrieving revision 1.7
+retrieving revision 1.6
+diff -r1.7 -r1.6
+48a49
+> 
+60a62
+> 
+80c82
+<     JointEventsInfo(ii).PSTH = ev.data.events.PSTH;
+---
+>     JointEventsInfo(ii).PSTH = ev.data.events.DataPSTH;
+Index: @jointevents/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@jointevents/plot.m,v
+retrieving revision 1.23
+retrieving revision 1.13
+diff -r1.23 -r1.13
+9,15c9,14
+<     'numBins',25,'Significance',0.05,'showShiftedSpikeCountCorrelations',0,...
+<     'showJointEvents',0,'showJointPSTHScatterPlot',0);
+< 
+< Args = getOptArgs(varargin,Args,'flags',{'showTitle','xlabel','linkedZoom','showDurations',...
+<     'showProbability','showSimilarityIndex','showSpikeCountCorrelations',...
+<     'showSpikeCountCorrelationsDurations','showJointEventsPSTHCorrelations',...
+<     'showShiftedSpikeCountCorrelations','showJointEvents','showJointPSTHScatterPlot'});
+---
+>     'JointEventsSimilarities',0,'numBins',25,'Significance',0,'showShiftedSpikeCountCorrelations',0);
+> Args = getOptArgs(varargin,Args,'flags',{'showTitle','xlabel','linkedZoom', ...
+>         'showDurations','showProbability','showSimilarityIndex','showSpikeCountCorrelations',...
+>         'showSpikeCountCorrelationsDurations','showJointEventsPSTHCorrelations',...
+>         'JointEventsSimilarities','showShiftedSpikeCountCorrelations'});
+> varargout{1} = {'Args',Args};
+30,32c29
+<     PSTH_Correlation_Significances = obj.data.jointevents.Correlation_Significance_Value(n);
+<     Start_Overlap =  obj.data.jointevents.Joint_Overlap_Start(n,:);
+<     End_Overlap =  obj.data.jointevents.Joint_Overlap_End(n,:);
+---
+>     PSTH_Correlation_Significances = obj.data.jointevents.Correlation_Significance_Value(n); 
+39,51d35
+<     if n==1
+<         Rasters = obj.data.jointevents.Rasters(1:obj.data.jointevents.NumReps(n),:);
+<         PSTH = obj.data.jointevents.PSTH(1:2,:);
+<         Start = obj.data.jointevents.StartEvent(:,1:2);
+<         End = obj.data.jointevents.EndEvent(:,1:2);
+<     else
+<         Rasters = obj.data.jointevents.Rasters(obj.data.jointevents.NumReps(n-1)+1:obj.data.jointevents.NumReps(n),:);
+<         PSTH = obj.data.jointevents.PSTH((n*2)-1:n*2,:);
+<         Start = obj.data.jointevents.StartEvent(:,(n*2)-1:n*2);
+<         End = obj.data.jointevents.EndEvent(:,(n*2)-1:n*2);
+<     end
+<     UpperThresholds = obj.data.jointevents.UpperThresholds(n,:);
+<     LowerThresholds = obj.data.jointevents.LowerThresholds(n,:);
+75,77c59,62
+<     bins = 0:nanmax(Joint_Overlap_Durations)/Args.numBins:nanmax(Joint_Overlap_Durations);
+<     median_dur =  nanmedian(Joint_Overlap_Durations);
+<     mean_dur =  nanmean(Joint_Overlap_Durations);
+---
+>     index = nanmax(Joint_Overlap_Durations);
+>     bins = 0:index/Args.numBins:index;
+>     median_dur =  nanmedian(reshape(Joint_Overlap_Durations,1,[]));
+>     mean_dur =  nanmean(reshape(Joint_Overlap_Durations,1,[]));
+81a67,74
+>     if Args.xlabel
+>         xlabel('Overlap Durations (msec)')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+>     ylabel('# of Occurrences')
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+83,85c76
+<     xlabel('Overlap Durations (msec)')
+<     ylabel('Number of Occurrences')
+<     xlim([0 nanmax(Joint_Overlap_Durations)+10])
+---
+>     xlim([0 index+10])
+87c78
+<         title(['Overlap Durations for ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_dur) '  Mean: ',num2str(mean_dur)])
+---
+>         title(['Population Durations ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_dur) '  Mean: ',num2str(mean_dur)])
+97,100c88,92
+<     bins = 0:nanmax(Joint_Overlap_Probability)/Args.numBins:nanmax(Joint_Overlap_Probability);
+<     median_prob =  nanmedian(Joint_Overlap_Probability);
+<     mean_prob =  nanmean(Joint_Overlap_Probability);
+<     [N1] = histcie(Joint_Overlap_Probability,bins);
+---
+>     index = nanmax(Joint_Overlap_Probability);
+>     bins = 0:index/Args.numBins:index;
+>     median_prob =  nanmedian(reshape(Joint_Overlap_Probability,1,[]));
+>     mean_prob =  nanmean(reshape(Joint_Overlap_Probability,1,[]));
+>     [N1] = histcie(Joint_Overlap_Expected,bins);
+102,103c94,107
+<     h = findobj(gca,'Type','patch');
+<     set(h,'FaceColor',Args.Color,'EdgeColor','k')
+---
+>     h1 = findobj(gca,'Type','patch');
+>     set(h1,'FaceColor','none','EdgeColor','k')
+>     hold on
+>     [N2] = histcie(Joint_Overlap_Probability,bins);
+>     bar(bins,N2,'histc')
+>     hold off
+>     if Args.xlabel
+>         xlabel('Joint Probability')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+>     ylabel('# of Occurrences')
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+105,106d108
+<     xlabel('Joint Probability')
+<     ylabel('Number of Occurrences')
+108,109c110,111
+<         title(['Population Probabilities for ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_prob) '  Mean: ',num2str(mean_prob)])
+<         xlim([0 nanmax(Joint_Overlap_Probability)])
+---
+>         title(['Population Durations ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_prob) '  Mean: ',num2str(mean_prob)])
+>         xlim([0 index])
+112c114
+<         xlim([0 nanmax(Joint_Overlap_Probability)])
+---
+>         xlim([0 index])
+125d126
+<     set(gca,'FontSize',16)
+128,129c129,137
+<     xlabel('Similiarty Index')
+<     ylabel('Number of Occurrences')
+---
+>     if Args.xlabel
+>         xlabel('Similiarty Index')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+>     ylabel('# of Occurrences')
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+>     set(gca,'FontSize',16)
+132c140
+<         title(['Population Similarity Index for ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_sim) '  Mean: ',num2str(mean_sim)])
+---
+>         title(['Population Durations ',num2str(obj.data.numSets) ' Cell Pairs' '  Median: ',num2str(median_sim) '  Mean: ',num2str(mean_sim)])
+142c150
+<     index = isnan(Spike_Count_Correlations); % Take out the NaNs
+---
+>     index = isnan(Spike_Count_Correlations);
+146,149c154,160
+<     if ~isempty(Spike_Count_Correlations)
+<         index = find(Spike_Count_Significances<Args.Significance);
+<         Significant_Spike_Count_Correlations = Spike_Count_Correlations(index);
+<         Perc_Sign = (length(Significant_Spike_Count_Correlations)/length(Spike_Count_Correlations))*100;
+---
+>     if ~isemtpy(Spike_Count_Correlations)
+>         Total_Num = length(Spike_Count_Correlations);    
+>         if Args.Significance %%% Toss out non-significant Spike Count Correlations %%%
+>             Spike_Count_Correlations(find(Spike_Count_Significances > Args.Significance)) = [];
+>         end     
+>         Num_Sign = length(Spike_Count_Correlations);
+>         Perc_Sign = (Num_Sign/Total_Num)*100;
+151,155c162,166
+<         index = find(Significant_Spike_Count_Correlations>=0);
+<         median_scc =  median(Significant_Spike_Count_Correlations(index));
+<         mean_scc =  mean(Significant_Spike_Count_Correlations(index));
+<         [N1] = histcie(Spike_Count_Correlations,bins);
+<         bar(bins,N1,1)
+---
+>         index = find(Spike_Count_Correlations>=0);
+>         median_scc =  nanmedian(Spike_Count_Correlations(index));
+>         mean_scc =  nanmean(Spike_Count_Correlations(index));
+>         [N] = histcie(Spike_Count_Correlations,bins);
+>         bar(bins,N,'histc')
+157,160c168,176
+<         set(h,'FaceColor','none','EdgeColor','k')
+<         hold on
+<         [N2] = histcie(Significant_Spike_Count_Correlations,bins);
+<         bar(bins,N2,1)
+---
+>         set(h,'FaceColor',Args.Color,'EdgeColor','k')
+>         if Args.xlabel
+>             xlabel('Correlation Coefficent')
+>             h = get(gca,'XLabel');
+>             set(h,'FontSize',16)
+>         end
+>         ylabel('# of Occurrences')
+>         h = get(gca,'YLabel');
+>         set(h,'FontSize',16)
+162,164d177
+<         %bar(bins,[N2 N1],'stack')
+<         xlabel('Correlation Coefficent')
+<         ylabel('Number of Occurrences')
+166d178
+<         hold off
+184,195c196,205
+<     index = find(Spike_Count_Significances<Args.Significance);
+<     Significant_Spike_Count_Correlations = Spike_Count_Correlations(index);
+<     Significant_Durations = Joint_Overlap_Durations(index);
+<     index = find(Spike_Count_Significances>=Args.Significance);
+<     Non_Significant_Spike_Count_Correlations = Spike_Count_Correlations(index);
+<     Non_Significant_Durations = Joint_Overlap_Durations(index);
+<     plot(Non_Significant_Spike_Count_Correlations,Non_Significant_Durations,'k*','LineWidth',3)   
+<     hold on
+<     plot(Significant_Spike_Count_Correlations,Significant_Durations,[Args.Color '*'],'LineWidth',3)  
+<     hold off
+<     set(gca,'FontSize',16)
+<     xlabel('Correlation Coefficent')
+---
+>     if Args.Significance %%% Toss out non-significant Spike Count Correlations %%%
+>         Spike_Count_Correlations(find(Spike_Count_Significances > Args.Significance)) = [];
+>         Joint_Overlap_Durations(find(Spike_Count_Significances > Args.Significance)) = [];
+>     end            
+>     plot(Spike_Count_Correlations,Joint_Overlap_Durations,[Args.Color '*'],'LineWidth',3)        
+>     if Args.xlabel
+>         xlabel('Correlation Coefficent')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+196a207,208
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+209a222,225
+>     if Args.Significance %%% Toss out non-significant Spike Count Correlations %%%
+>         Spike_Count_Correlations(find(Spike_Count_Significances > Args.Significance)) = [];
+>         Shift_Spike_Count_Correlations(find(Spike_Count_Significances > Args.Significance)) = [];
+>     end 
+217a234,242
+>     hold off
+>     if Args.xlabel
+>         xlabel('Correlation Coefficent')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+>     ylabel('# of Occurrences')
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+219,220d243
+<     xlabel('Correlation Coefficent')
+<     ylabel('Number of Occurrences')    
+223c246
+<         title(['Population ',num2str(obj.data.numSets) ' Cell Pairs  Mean: ',num2str(nanmean(Spike_Count_Correlations)) '  Mean Shifted: ',num2str(nanmean(Shift_Spike_Count_Correlations))])
+---
+>         title(['Population ',num2str(obj.data.numSets) ' Cell Pairs'])
+232,233c255,257
+<     index = find(PSTH_Correlation_Significances<Args.Significance);
+<     Significant_Spike_Count_Correlations = PSTH_Correlation_Coefficents(index);
+---
+>     if Args.Significance %%% Toss out non-significant Spike Count Correlations %%%
+>         PSTH_Correlation_Coefficents(find(PSTH_Correlation_Significances > Args.Significance)) = [];
+>     end    
+235,237c259,261
+<     index = find(Significant_Spike_Count_Correlations>=0);
+<     median_scc =  nanmedian(Significant_Spike_Count_Correlations(index));
+<     mean_scc =  nanmean(Significant_Spike_Count_Correlations(index));
+---
+>     index = find(PSTH_Correlation_Coefficents>=0);
+>     median_scc =  nanmedian(PSTH_Correlation_Coefficents(index));
+>     mean_scc =  nanmean(PSTH_Correlation_Coefficents(index));
+239c263
+<     bar(bins,N,'histc');hold on    
+---
+>     bar(bins,N,'histc')
+241,245c265,270
+<     set(h,'FaceColor','none','EdgeColor','k')
+<     [N] = histcie(Significant_Spike_Count_Correlations,bins);
+<     bar(bins,N,'histc');hold off
+<     set(gca,'FontSize',16)
+<     xlabel('Correlation Coefficent')
+---
+>     set(h,'FaceColor',Args.Color,'EdgeColor','k')
+>     if Args.xlabel
+>         xlabel('Correlation Coefficent')
+>         h = get(gca,'XLabel');
+>         set(h,'FontSize',16)
+>     end
+246a272,274
+>     h = get(gca,'YLabel');
+>     set(h,'FontSize',16)
+>     set(gca,'FontSize',16)
+256,260c284,291
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< if Args.showJointEvents  
+<     NumReps = size(Rasters,1)/2;
+<     r = transpose([1:size(Rasters(1:NumReps,:),1)])*ones(1,size(Rasters,2));
+<     plot(Rasters(1:NumReps,:),r,'LineStyle','none','Marker','.','Color','b');  
+---
+> %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+> if Args.JointEventsSimilarities        
+>     index = nanmax([Expected_Dist Measured_Dist]);
+>     bins = 0:index/Args.numBins:index;
+>     [N] = histcie(Expected_Dist,bins);
+>     bar(bins,N,'histc')
+>     h = findobj(gca,'Type','patch');
+>     set(h,'FaceColor','r','EdgeColor','k')
+262,305c293,299
+<     plot(Rasters(NumReps+1:end,:),r,'LineStyle','none','Marker','.','Color','r'); 
+<     index = find(Start_Overlap>0);
+<     for e = 1:length(index);
+<         line([Start_Overlap(e) End_Overlap(e)],[-2 -2],'LineWidth',2,'Color','k')
+<         line([Start_Overlap(e) End_Overlap(e)],[NumReps+2 NumReps+2],'LineWidth',2,'Color','k')
+<         spc = round(Spike_Count_Correlations(e)*100)/100;
+<         text((Start_Overlap(e)+(End_Overlap(e)-Start_Overlap(e))/2),-12,num2str(spc),'LineWidth',2)
+<         text((Start_Overlap(e)+(End_Overlap(e)-Start_Overlap(e))/2),NumReps+6,num2str(spc),'LineWidth',2)
+<     end   
+<     for e = 1:size(Start,1)
+<         if Start(e,1) >= 0
+<             line([Start(e,1) End(e,1)],[-4 -4],'LineWidth',2,'Color','b')
+<         end
+<         if Start(e,2) >= 0
+<             line([Start(e,2) End(e,2)],[-6 -6],'LineWidth',2,'Color','r')
+<         end
+<     end    
+<     stairs(0:1:(size(PSTH,2)-1),PSTH(1,:)-max2(PSTH),'b')
+<     line([0 (size(PSTH,2)-1)],[UpperThresholds(1)-max2(PSTH) UpperThresholds(1)-max2(PSTH)],'Color','b')
+<     line([0 (size(PSTH,2)-1)],[LowerThresholds(1)-max2(PSTH) LowerThresholds(1)-max2(PSTH)],'Color','b','LineStyle','--')
+<     stairs(0:1:(size(PSTH,2)-1),PSTH(2,:)-max2(PSTH),'r')
+<     line([0 (size(PSTH,2)-1)],[UpperThresholds(2)-max2(PSTH) UpperThresholds(2)-max2(PSTH)],'Color','r')
+<     line([0 (size(PSTH,2)-1)],[LowerThresholds(2)-max2(PSTH) LowerThresholds(2)-max2(PSTH)],'Color','r','LineStyle','--')
+<     ylim([-max2(PSTH)-1 NumReps+12])
+<     ylabel('Repetitions')
+<     xlabel('Time (msec)')
+<     hold off
+<     title([obj.data.setNames{n} '   Similarity Index: ',num2str(Similarity_Index) '  PSTH Correlation Coefficient: ',num2str(PSTH_Correlation_Coefficents)])
+< end
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< 
+< %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< if Args.showJointPSTHScatterPlot
+<    plot(PSTH(1,:),PSTH(2,:),Args.Color)
+<    if ~isempty(Start_Overlap)
+<         index = find(Start_Overlap>0);
+<         if ~isempty(index)
+<             Start_Overlap = Start_Overlap(index);
+<             End_Overlap = End_Overlap(index);
+<             for e = 1:length(Start_Overlap)
+<                 hold on
+<                 plot(PSTH(1,Start_Overlap(e):End_Overlap(e)),PSTH(2,Start_Overlap(e):End_Overlap(e)),'r')
+<             end
+<         end
+---
+>     [N] = histcie(Measured_Dist,bins);
+>     bar(bins,N,'histc')
+>     legend Expected Measured
+>     if Cum
+>         title(['Population ',num2str(obj.data.numSets) ' Cell Pairs'])
+>     else
+>         title([obj.data.setNames{n} '   H: ' num2str(H_Dist) '   P: ' num2str(P_Dist)])
+307,312d300
+<     line([0 max2(PSTH)],[0 max2(PSTH)],'Color','k')
+<     xlabel('Firing Rate')
+<     ylabel('Firing Rate')
+<     title([obj.data.setNames{n} '/  Similarity Index: ',num2str(Similarity_Index) '/  PSTH Correlation Coefficient: ',num2str(PSTH_Correlation_Coefficents)])
+<     xlim([0 max2(PSTH)])
+<     ylim([0 max2(PSTH)])
+314c302,303
+< end    
+\ No newline at end of file
+---
+> end
+> %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Index: @jointevents/plus.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@jointevents/plus.m,v
+retrieving revision 1.6
+retrieving revision 1.3
+diff -r1.6 -r1.3
+2,4c2,30
+< %@jointevents/plus Overloaded plus function for Jointevents objects.
+< %   je = plus(P,Q) combines joint events objects P and Q and returns the
+< %   JointEvents object R.
+---
+> %@firingrate/plus Overloaded plus function for FIRINGRATE objects.
+> %   je = plus(P,Q) combines sparsity objects P and Q and returns the
+> %   FIRINGRATE object R.
+> 
+> if(q.data.numSets==0)
+> 	r = p;
+> elseif(p.data.numSets==0)
+> 	r = q;
+> else    
+>     % assign p to r so that we can be sure we are returning an object
+>     r = p;    
+>     r.data.numSets = p.data.numSets + q.data.numSets;
+> 	r.data.setNames = {p.data.setNames{:} q.data.setNames{:}};
+>     r.data.jointevents.Joint_Overlap_Probability = concatenate(r.data.jointevents.Joint_Overlap_Probability, q.data.jointevents.Joint_Overlap_Probability);
+>     r.data.jointevents.Expected_Overlap = concatenate(r.data.jointevents.Expected_Overlap, q.data.jointevents.Expected_Overlap);      
+>     r.data.jointevents.Similarity_Index = concatenate(r.data.jointevents.Similarity_Index, q.data.jointevents.Similarity_Index);
+>     r.data.jointevents.Joint_Overlap_Durations = concatenate(r.data.jointevents.Joint_Overlap_Durations, q.data.jointevents.Joint_Overlap_Durations);
+>     r.data.jointevents.Spike_Count_Correlations = concatenate(r.data.jointevents.Spike_Count_Correlations, q.data.jointevents.Spike_Count_Correlations);
+>     r.data.jointevents.Spike_Count_Significances = concatenate(r.data.jointevents.Spike_Count_Significances, q.data.jointevents.Spike_Count_Significances);  
+>     r.data.jointevents.Shift_Spike_Count_Correlations = concatenate(r.data.jointevents.Shift_Spike_Count_Correlations, q.data.jointevents.Shift_Spike_Count_Correlations); 
+>     r.data.jointevents.Shift_Spike_Count_Significances = concatenate(r.data.jointevents.Shift_Spike_Count_Significances, q.data.jointevents.Shift_Spike_Count_Significances);     
+>     r.data.jointevents.Correlation_Coefficent_Value = concatenate(r.data.jointevents.Correlation_Coefficent_Value, q.data.jointevents.Correlation_Coefficent_Value);   
+>     r.data.jointevents.Correlation_Significance_Value = concatenate(r.data.jointevents.Correlation_Significance_Value, q.data.jointevents.Correlation_Significance_Value);   
+>     r.data.jointevents.H = concatenate(r.data.jointevents.H, q.data.jointevents.H);   
+>     r.data.jointevents.P = concatenate(r.data.jointevents.P, q.data.jointevents.P); 
+>     r.data.jointevents.expected_dist = concatenate(r.data.jointevents.expected_dist , q.data.jointevents.expected_dist); 
+>     r.data.jointevents.measured_dist = concatenate(r.data.jointevents.measured_dist , q.data.jointevents.measured_dist);    
+>     r.nptdata = plus(p.nptdata,q.nptdata);    
+> end
+6,64d31
+< % get name of class
+< classname = mfilename('class');
+< % check if first input is the right kind of object
+< if(~isa(p,classname))
+<     % check if second input is the right kind of object
+<     if(~isa(q,classname))
+<         % both inputs are not the right kind of object so create empty
+<         % object and return it
+<         r = feval(classname);
+<     else
+<         % second input is the right kind of object so return that
+<         r = q;
+<     end
+< else
+<     if(~isa(q,classname))
+<         % p is the right kind of object but q is not so just return p
+<         r = p;
+<     elseif(isempty(p))
+<         % p is right object but is empty so return q, which should be
+<         % right object
+<         r = q;
+<     elseif(isempty(q))
+<         % p are q are both right objects but q is empty while p is not
+<         % so return p
+<         r = p;
+<     else
+<         % both p and q are the right kind of objects so add them 
+<         % together
+<         % assign p to r so that we can be sure we are returning the right
+<         % object
+<         r = p;
+<         r.data.numSets = p.data.numSets + q.data.numSets;
+<         r.data.setNames = {p.data.setNames{:} q.data.setNames{:}};
+<         r.data.jointevents.Joint_Overlap_Probability = concatenate(r.data.jointevents.Joint_Overlap_Probability, q.data.jointevents.Joint_Overlap_Probability);
+<         r.data.jointevents.Expected_Overlap = concatenate(r.data.jointevents.Expected_Overlap, q.data.jointevents.Expected_Overlap);      
+<         r.data.jointevents.Similarity_Index = concatenate(r.data.jointevents.Similarity_Index, q.data.jointevents.Similarity_Index);
+<         r.data.jointevents.Joint_Overlap_Durations = concatenate(r.data.jointevents.Joint_Overlap_Durations, q.data.jointevents.Joint_Overlap_Durations);
+<         r.data.jointevents.Spike_Count_Correlations = concatenate(r.data.jointevents.Spike_Count_Correlations, q.data.jointevents.Spike_Count_Correlations);
+<         r.data.jointevents.Spike_Count_Significances = concatenate(r.data.jointevents.Spike_Count_Significances, q.data.jointevents.Spike_Count_Significances);  
+<         r.data.jointevents.Shift_Spike_Count_Correlations = concatenate(r.data.jointevents.Shift_Spike_Count_Correlations, q.data.jointevents.Shift_Spike_Count_Correlations); 
+<         r.data.jointevents.Shift_Spike_Count_Significances = concatenate(r.data.jointevents.Shift_Spike_Count_Significances, q.data.jointevents.Shift_Spike_Count_Significances);     
+<         r.data.jointevents.Correlation_Coefficent_Value = concatenate(r.data.jointevents.Correlation_Coefficent_Value, q.data.jointevents.Correlation_Coefficent_Value);   
+<         r.data.jointevents.Correlation_Significance_Value = concatenate(r.data.jointevents.Correlation_Significance_Value, q.data.jointevents.Correlation_Significance_Value);   
+<         r.data.jointevents.H = concatenate(r.data.jointevents.H, q.data.jointevents.H);   
+<         r.data.jointevents.P = concatenate(r.data.jointevents.P, q.data.jointevents.P); 
+<         r.data.jointevents.expected_dist = concatenate(r.data.jointevents.expected_dist , q.data.jointevents.expected_dist); 
+<         r.data.jointevents.measured_dist = concatenate(r.data.jointevents.measured_dist , q.data.jointevents.measured_dist);    
+<         r.data.jointevents.Rasters = concatenate(r.data.jointevents.Rasters , q.data.jointevents.Rasters); 
+<         r.data.jointevents.Joint_Overlap_Start = concatenate(r.data.jointevents.Joint_Overlap_Start , q.data.jointevents.Joint_Overlap_Start);
+<         r.data.jointevents.Joint_Overlap_End = concatenate(r.data.jointevents.Joint_Overlap_End , q.data.jointevents.Joint_Overlap_End);        
+<         r.data.jointevents.NumReps = [p.data.jointevents.NumReps; (p.data.jointevents.NumReps(end) + q.data.jointevents.NumReps)];
+<         r.data.jointevents.PSTH = concatenate(r.data.jointevents.PSTH , q.data.jointevents.PSTH);
+<         r.data.jointevents.UpperThresholds = concatenate(r.data.jointevents.UpperThresholds , q.data.jointevents.UpperThresholds);
+<         r.data.jointevents.LowerThresholds = concatenate(r.data.jointevents.LowerThresholds , q.data.jointevents.LowerThresholds);
+<         r.data.jointevents.StartEvent = concatenate(r.data.jointevents.StartEvent , q.data.jointevents.StartEvent,'ColumnWise');
+<         r.data.jointevents.EndEvent = concatenate(r.data.jointevents.EndEvent , q.data.jointevents.EndEvent,'ColumnWise');
+<         r.nptdata = plus(p.nptdata,q.nptdata);    
+<     end
+< end
+\ No newline at end of file
+Index: @jointevents/private/JointEventsAnalysis.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@jointevents/private/JointEventsAnalysis.m,v
+retrieving revision 1.15
+retrieving revision 1.12
+diff -r1.15 -r1.12
+31c31,32
+< if isempty(overlap)    
+---
+> if isempty(overlap)
+>     
+69c70
+<     JointEvents.Joint_Overlap_Probability = length(overlap)/ceil(stimInfo.data.catInfo.repetition_duration);
+---
+>     JointEvents.Joint_Overlap_Probability = length(overlap)/stimInfo.data.catInfo.repetition_duration;
+79c80
+<     %%% Similarity Index is the actual joint probablily / by the
+---
+>     %%% Similarity Index is the actual joint probablilyt / by the
+149c150
+<     
+---
+>      
+151,185d151
+< 
+< %%% Creation of the raster %%%%%%
+< rasters=[];
+< for r = 1:length(JointEventsInfo)    
+<     for rr = (1:stimInfo.data.catInfo.num_repetitions)*r
+<         frames = JointEventsInfo(r).framepoints((rr/r)*stimInfo.data.catInfo.num_frames-stimInfo.data.catInfo.num_frames+1:((rr/r)*stimInfo.data.catInfo.num_frames)+1);
+<         %%%% Spiketimes for the given repetition %%%%%
+<         rep_spikes = JointEventsInfo(r).spiketrain(find(JointEventsInfo(r).spiketrain > frames(1) & JointEventsInfo(r).spiketrain <= frames(end)));    
+<         if (rr/r) > 1    
+<             rast = rep_spikes-time_adjust;
+<             time_adjust = frames(end); % This adjusts the spiketimes for each repetition of the stimulus
+<         else
+<             if frames(1)~= 1
+<                 rast = rep_spikes-frames(1);
+<                 time_adjust = frames(end); % This adjusts the spiketimes for each repetition of the stimulus
+<             else
+<                 rast = rep_spikes;
+<                 time_adjust = frames(end); % This adjusts the spiketimes for each repetition of the stimulus
+<             end
+<         end         
+<         if rr>1
+<             rasters = concatenate(rasters,rast);
+<         else
+<             rasters = rast;
+<         end        
+<     end
+< end   
+< 
+< JointEvents.Rasters = rasters;
+< JointEvents.NumReps = size(rasters,1);
+< JointEvents.PSTH = [JointEventsInfo(1).PSTH';JointEventsInfo(2).PSTH'];
+< JointEvents.UpperThresholds = [JointEventsInfo(1).Thresholds.meanupperthreshold JointEventsInfo(2).Thresholds.meanupperthreshold];
+< JointEvents.LowerThresholds = [JointEventsInfo(1).Thresholds.meanlowerthreshold JointEventsInfo(2).Thresholds.meanlowerthreshold];
+< JointEvents.StartEvent = concatenate(JointEventsInfo(1).StartEvent,JointEventsInfo(2).StartEvent,'ColumnWise');
+< JointEvents.EndEvent = concatenate(JointEventsInfo(1).EndEvent,JointEventsInfo(2).EndEvent,'ColumnWise');
+\ No newline at end of file
+Index: @responsiveness/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@responsiveness/plot.m,v
+retrieving revision 1.21
+retrieving revision 1.17
+diff -r1.21 -r1.17
+16c16
+<     'NormalizeYaxis',0, 'Heterogeneity',0,'IntraGroup',0,...
+---
+>     'NormalizeYaxis',0, 'HeterogeneityValue',0,'IntraGroup',0,...
+17a18,21
+> Args = getOptArgs(varargin,Args,'flags',{'showTitle','xlabel','Color', ...
+>         'linkedZoom','IntraGroup','InterGroup', ...
+>         'Pairs','STD','Diff','Mean','Bar'}, ...
+>         'shortcuts',{'Heterogeneity',{'HeterogeneityValue',1}});
+19,26c23
+< Args.flags = {'showTitle','xlabel','linkedZoom',...
+<     'Heterogeneity','IntraGroup',...
+<     'InterGroup','Pairs','STD','Diff','Mean','Bar'};
+< 
+< [Args,varargin2] = getOptArgs(varargin,Args,...
+<      'Color','numBins');
+< 
+< if Args.Heterogeneity  
+---
+> if Args.HeterogeneityValue    
+38c35,36
+<             end            
+---
+>             end
+>             
+39a38
+>             
+40a40
+>             
+41a42
+>             
+48c49,51
+<         end 
+---
+>             
+>         end    
+>         
+53d55
+<             NumCells=[];
+60d61
+<                     NumCells = [NumCells length(index)];
+63d63
+<             NumCells=sum(NumCells);
+65,71c65,68
+<             ind = find(resp_values>=50);low_vals=resp_values;low_vals(ind)=0;
+<             bar(low_vals,1)
+<             set(gca,'FontSize',16)
+<             h = findobj(gca,'Type','patch');set(h,'FaceColor','r');hold on
+<             ind = find(resp_values<50);high_vals=resp_values;high_vals(ind)=0;
+<             bar(high_vals,1)   
+<             set(gca,'FontSize',16)
+---
+>             bar(resp_values,1,Args.Color)
+>             hold on
+>             ind = find(resp_values>=50); resp_values(ind)=0;            
+>             bar(resp_values,1,'r')
+75c72
+<             binedges = 0:(100/Args.numBins):100; % Responsiveness Values range from 0 to 100.
+---
+>             binedges = 0:(max(H)/Args.numBins):max(H); % Responsiveness Values range from 0 to 100.
+77,79c74
+<             bar(binedges,n,1,Args.Color)
+<             set(gca,'FontSize',16)
+<             NumCells=length(H);
+---
+>             bar(binedges,n,1,Args.Color) 
+80a76
+>         
+94a91
+>             
+97a95
+>             
+110c108
+<         binedges = 0:(100/Args.numBins):100; % Responsiveness Values range from 0 to 100.
+---
+>         binedges = 0:(max(H)/Args.numBins):max(H); % Responsiveness Values range from 0 to 100.
+113d110
+<         set(gca,'FontSize',16)
+121c118
+<     n = histc(obj.data.responsiveness,binedges);
+---
+>     n = histcie(obj.data.responsiveness,binedges);
+128d124
+<     set(gca,'FontSize',16)
+133c129
+<         xlim([min(diff(binedges))*-1 min(diff(binedges))+100])
+---
+>         xlim([-1 101])
+138c134
+<         xlim([min(diff(binedges))*-1 min(diff(binedges))+100])
+---
+>         xlim([-1 101])
+141d136
+<     NumCells=get(obj,'Number');
+150c145
+<         string = ['RESPONSIVENESS -- ' num2str(size(H,2)) ' Pairs'];
+---
+>         string = ['RESPONSIVENESS -- ' num2str(size(H,2)) ' Groups'];
+152c147
+<         string = ['RESPONSIVENESS -- ' num2str(NumCells) ' Cells'];
+---
+>         string = ['RESPONSIVENESS -- ' num2str(get(obj,'Number')) ' Cells'];
+161d155
+< 
+Index: @responsiveness/private/CalcResponsiveness.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@responsiveness/private/CalcResponsiveness.m,v
+retrieving revision 1.6
+retrieving revision 1.5
+diff -r1.6 -r1.5
+13a14
+> 
+16a18
+> 
+18a21
+> r_dist=[];
+20a24,25
+>     rep_p_dist=[];
+>     rep_r_dist=[];
+21a27
+> 
+24,25c30,33
+<         [r,p] = corrcoef(spiketrain1,spiketrain2);        
+<         tf = isnan(p(1,2));
+---
+>         [r,p] = corrcoef([spiketrain1' spiketrain2']);        
+>         p_value = p(1,2);
+>         r_value = r(1,2);        
+>         tf = isnan(p_value);
+27c35,36
+<             p_dist = [p_dist p(1,2)];
+---
+>             rep_p_dist = [rep_p_dist p_value];
+>             rep_r_dist = [rep_r_dist r_value];            
+29a39,40
+>     p_dist = [p_dist rep_p_dist]; 
+>     r_dist = [r_dist rep_r_dist];
+30a42
+> 
+Index: @sparsity/heterogeneity.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@sparsity/heterogeneity.m,v
+retrieving revision 1.3
+retrieving revision 1.2
+diff -r1.3 -r1.2
+4d3
+< %   G = groupDirs(OBJ) returns a matrix containing indices 
+5a5
+> %   The default grouping is 'IntraGroup', which returns the indices
+31c31
+<     r = obj.data.sparsity;
+---
+>     s = obj.data.sparsity;
+33c33
+<     avals = r(sgi);
+---
+>     avals = s(sgi);
+82c82
+< end
+---
+> end
+\ No newline at end of file
+Index: @sparsity/plot.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@sparsity/plot.m,v
+retrieving revision 1.23
+retrieving revision 1.19
+diff -r1.23 -r1.19
+3c3
+< %   OBJ = plot(OBJ)
+---
+> %   OBJ = plot(OBJ) 
+7c7
+< %  The heterogeneity option is for pairs of cells within groups
+---
+> %  The heterogeneity option is for pairs of cells within groups 
+17,18c17,22
+<     'NormalizeYaxis',0, 'Heterogeneity',0,'IntraGroup',0,...
+<     'InterGroup',0, 'Pairs',0,'STD',0,'Diff',0,'Mean',0,'Bar',0);  %yaxis probability rather than num of occurences
+---
+>     'NormalizeYaxis',0, 'HeterogeneityValue',0,'IntraGroup',0,'InterGroup',0, ...
+>     'Pairs',0,'STD',0,'Diff',0,'Mean',0,'Bar',0);  %yaxis probability rather than num of occurences
+> Args = getOptArgs(varargin,Args,'flags',{'showTitle','xlabel','Color', ...
+>         'linkedZoom','Resp','IntraGroup','InterGroup', ...
+>         'Pairs','STD','Diff','Mean','Bar'}, ...
+>         'shortcuts',{'Heterogeneity',{'HeterogeneityValue',1}});
+20,27c24
+< Args.flags = {'showTitle','xlabel','linkedZoom',...
+<     'Heterogeneity','IntraGroup',...
+<     'InterGroup','Pairs','STD','Diff','Mean','Bar'};
+< 
+< [Args,varargin2] = getOptArgs(varargin,Args,...
+<     'Color','numBins');
+< 
+< if Args.Heterogeneity
+---
+> if Args.HeterogeneityValue    
+39c36
+<             end
+---
+>             end            
+41c38
+<             H = heterogeneity(obj,'IntraGroup','Bar');
+---
+>             H = heterogeneity(obj,'IntraGroup','Bar'); 
+44c41
+<                 H = heterogeneity(obj,'IntraGroup','STD');
+---
+>                 H = heterogeneity(obj,'IntraGroup','STD');        
+48,49c45,47
+<             end
+<         end
+---
+>             end            
+>         end    
+>         
+51c49
+<             resp_values=[];
+---
+>             spar_values=[];
+54d51
+<             NumCells=[];
+57,58c54,55
+<                 if length(index) > 1  %%% Only include the sparsity values for groups of cells
+<                     resp_values = [resp_values 0 0 flipdim(sort(H(index,ii)),1)'];
+---
+>                 if length(index) > 1 %%% Only include the sparsity values for groups of cells
+>                     spar_values = [spar_values 0 0 flipdim(sort(H(index,ii)),1)'];   
+61d57
+<                     NumCells=[NumCells length(index)];
+64d59
+<             NumCells=sum(NumCells);
+66,71c61
+<             ind = find(resp_values>=50);low_vals=resp_values;low_vals(ind)=0;
+<             bar(low_vals,1)
+<             set(gca,'FontSize',16)
+<             h = findobj(gca,'Type','patch');set(h,'FaceColor','r');hold on
+<             ind = find(resp_values<50);high_vals=resp_values;high_vals(ind)=0;
+<             bar(high_vals,1)
+---
+>             bar(spar_values,1,Args.Color)
+75,79c65,67
+<             binedges = 0:(100/Args.numBins):max(H); % Sparsity Values range from 0 to 100.
+<             n = histcie(H,binedges);
+<             bar(binedges,n,1,Args.Color)
+<             set(gca,'FontSize',16)
+<             NumCells=length(H);
+---
+>             binedges = 0:(max(H)/Args.numBins):max(H); % Responsiveness Values range from 0 to 100.
+>             n = histcie(H,binedges);    
+>             bar(binedges,n,1,Args.Color) 
+80a69
+>         
+95c84
+< 
+---
+>             
+98,99c87,88
+<             xlabel('Group Numbers')
+<         else
+---
+>             xlabel('Group Numbers')            
+>         else            
+108c97
+<         end
+---
+>         end        
+111,114c100,102
+<         binedges = 0:(100/Args.numBins):100; % Responsiveness Values range from 0 to 100.
+<         n = histcie(H,binedges);
+<         bar(binedges,n,Args.Color)
+<         set(gca,'FontSize',16)
+---
+>         binedges = 0:(max(H)/Args.numBins):max(H); % Responsiveness Values range from 0 to 100.
+>         n = histcie(H,binedges);    
+>         bar(binedges,n,Args.Color) 
+117,120c105,108
+<     end
+< 
+< else
+< 
+---
+>     end  
+>     
+> else 
+>     
+122,123c110,111
+<     n = histc(obj.data.sparsity,binedges);
+< 
+---
+>     n = histcie(obj.data.sparsity,binedges);
+>     
+127,129d114
+< 
+<     bar(binedges,n,1,Args.Color)
+<     set(gca,'FontSize',16)
+130a116,117
+>     bar(binedges,n,1,Args.Color)
+>            
+134c121
+<         xlim([min(diff(binedges))*-1 min(diff(binedges))+100])
+---
+>         xlim([-1 101])
+137c124
+<         ylabel('Number of Occurences')
+---
+>         ylabel('Number of Occurences')  
+139c126
+<         xlim([min(diff(binedges))*-1 min(diff(binedges))+100])
+---
+>         xlim([-1 101])
+141,142c128
+<     end
+<     NumCells=get(obj,'Number');
+---
+>     end    
+156,157c142,143
+<     else
+<         string = ['SPARSITY -- ' num2str(NumCells) ' Cells'];
+---
+>     else  
+>         string = ['SPARSITY -- ' num2str(get(obj,'Number')) ' Cells'];
+159c145
+< end
+---
+> end  
+Index: @sparsity/sparsity.m
+===================================================================
+RCS file: /ccb/src/graycvs/Cat/@sparsity/sparsity.m,v
+retrieving revision 1.11
+retrieving revision 1.10
+diff -r1.11 -r1.10
+68c68
+< stimInfo = stiminfo('auto');
+---
+> stimInfo = stiminfo('auto',1,'save');

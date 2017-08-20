@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+
+workdir="/scratch/syen"
+datadir="/home/syen/cat/newcatdata"
+pfname="${datadir}/n4.txt"
+winpjob="100"
+
+if [ ! -d $workdir ] 
+	then mkdir $workdir
+fi
+cd $workdir
+grep `hostname` $pfname > s1.txt
+ddirs=( $(cat s1.txt | cut -f 1) )
+nframes=( $(cat s1.txt | cut -f 2) )
+index=0
+
+for dname in "${ddirs[@]}"; do
+	# nframes=`echo $i | awk '{print $2}'`
+	nf=${nframes[$index]}
+	cd ${datadir}
+	find ${dname} -name "shsy*data*mat" | cpio -p -dmuv $workdir
+	cd ${workdir}/${dname}
+	for j in  "" A B C; do
+		echo "export  LD_LIBRARY_PATH=/usr/lib:/lib:/home/programs/matlab13.1/bin/glnx86:/home/programs/matlab13.1/extern/lib/glnx86:/ccb/home/syen/matlab/Cat/bin:/usr/local/lib; ~/matlab/Cat/bin/shufflesyncsurr 1 $nf shsysdata$j.mat; ~/matlab/Cat/bin/computeSurrData shsysdata$j.mat" | batch
+	done
+	let "index+=1"
+done
+
+rm ${workdir}/s1.txt

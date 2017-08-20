@@ -1,0 +1,35 @@
+#!/bin/tcsh -f
+# usage: eventwrapper useThresholds filename [dirs]
+
+# set arguments
+@ useThresholds = $1
+set filename = $2
+# get number of arguments
+@ nargs = $#argv
+if ( $nargs > 2 ) then
+    # if there are more arguments, loop over them instead of looping over
+    # directories in local directory
+    set dirs = ($argv[3-$nargs])
+    # get current directory
+    set thisDir = `pwd`
+    foreach i ($dirs)
+		cd $i
+		echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > eventout3; /ccb/home/syen/matlab/Cat/bin/eventCompute $useThresholds $filename >> eventout3 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/qsubEvent3 -N eventCompute -
+		cd $thisDir
+    end
+else
+    set dirs = (`ls -d [a-z][1-9]`)
+    foreach i ($dirs)
+		cd $i
+		foreach j (*)
+			cd $j
+			foreach k (*)
+				cd $k
+				echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > eventout3; /ccb/home/syen/matlab/Cat/bin/eventCompute $useThresholds $filename >> eventout3 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/qsubEvent3 -N eventCompute -
+				cd ..
+			end
+			cd ..
+		end
+		cd ..
+    end
+endif

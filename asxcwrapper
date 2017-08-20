@@ -1,0 +1,36 @@
+#!/bin/tcsh -f
+# usage: asxcswrapper #frames #frames/job datafile surrprefix
+
+# set arguments
+@ frames = $1
+@ jobframes = $2
+set datafile = $3
+set surrprefix = $4
+# figure out the number of jobs required
+# @ njobs = $frames / $jobframes
+# check for remainder
+# @ remjobs = $frames % $jobframes
+# if( $remjobs > 0) then
+# 	@ njobs++
+# endif
+
+# submit job that will put everything together
+# we need to do this since using -W depend=afterok:jobs requires us to keep
+# track of the job ids and that was creating a string that was too long
+# set jobid = `echo 'cd $PBS_O_WORKDIR; /ccb/home/syen/matlab/Cat/bin/combineSurrSynchrony '"$frames $sets" | qsub -W depend=on:$njobs -j oe -o $PWD/qsubfinal -N combineasxc -`
+
+@ startframe = 1
+@ endframe = $jobframes
+@ addframe = $endframe - $startframe
+# check startframe in case endframe was at frames on the previous run
+# and then startframe will be at frames+1 while endframe will be
+# at frames which will cause an error
+while( $startframe <= $frames )
+# 	echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > asxcout${startframe}; /ccb/home/syen/matlab/Cat/bin/asxcSurrSynchrony $startframe $endframe $sets >> asxcout${startframe} 2>&1" | qsub -W depend=beforeok:$jobid -V -l nodes=1 -j oe -o $PWD/qsub${startframe} -N asxc -
+	echo 'hostname; unset DISPLAY; cd $PBS_O_WORKDIR;'"hostname > asxcout${startframe}; /ccb/home/syen/matlab/Cat/bin/asxcSurrSynchrony $startframe $endframe $datafile $surrprefix >> asxcout${startframe} 2>&1" | qsub -V -l nodes=1 -j oe -o $PWD/qsub${startframe} -N asxc -
+	@ startframe = $endframe + 1
+	@ endframe = $startframe + $addframe
+	if( $endframe > $frames ) then
+		@ endframe = $frames
+	endif
+end

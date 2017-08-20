@@ -1,0 +1,17 @@
+#!/bin/tcsh -f
+# usage: mlqsub toolboxes numloops script
+# e.g. mlqsub "( Signal_Toolbox Statistics_Toolbox )" event.m 36
+# to get complete list of toolboxes, do lmstat -a
+
+# rename arguments
+set f1 = $1
+set script = $2
+if( $3 == "") then
+	@ loops = 1
+else
+	@ loops = $3
+endif
+
+echo $f1
+echo $script
+echo $loops
